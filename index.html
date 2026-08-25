@@ -92,106 +92,317 @@
 </head>
 <body class="bg-[#FAF6F4] text-[#26211E] min-h-screen flex flex-col items-center selection:bg-[#E8D8CF] selection:text-[#26211E]">
 
-<!-- Overlay -->
+<!-- ==========================================================
+     OVERLAY
+     ========================================================== -->
+
 <div
   id="menuOverlay"
   class="fixed inset-0 bg-black/40 z-[998] hidden opacity-0 transition-opacity">
 </div>
 
-<!-- Menu Lateral Mobile -->
+
+<!-- ==========================================================
+     MENU LATERAL MOBILE
+     ========================================================== -->
+
 <aside
   id="mobileMenu"
-  class="fixed top-0 left-0 h-full w-[290px] bg-[#FAF7F4] z-[999] transform -translate-x-full transition-transform duration-300 shadow-xl">
+  class="fixed top-0 left-0 h-full w-[290px] bg-[#F8F5F2] z-[999] transform -translate-x-full transition-transform duration-300 shadow-xl">
 
-  <!-- Cabeçalho -->
-  <div class="flex items-center justify-between p-6 border-b border-[#E8DED6]">
+  <!-- ========================================================
+       CABEÇALHO
+       ======================================================== -->
+
+  <div
+    class="flex items-center justify-between p-6 border-b border-[#E8DED5]"
+  >
 
     <div>
-      <h2 class="text-xl font-serif tracking-widest text-[#26211E]">
+
+      <h2
+        class="text-xl font-serif tracking-widest text-[#26211E]"
+      >
         ESSENZA
       </h2>
 
-      <p class="text-[10px] tracking-[0.25em] text-[#9E7960] mt-1">
+      <p
+        class="text-[10px] tracking-[0.25em] text-[#9E7960] mt-1"
+      >
         ÍNTIMAS
       </p>
+
     </div>
 
+
+    <!-- Fechar -->
     <button
       id="closeMenu"
       type="button"
-      class="text-[#26211E] p-2"
-      aria-label="Fechar Menu">
+      class="text-[#26211E] hover:text-[#9E7960] p-2 transition-colors"
+      aria-label="Fechar Menu"
+    >
 
       <svg
         class="w-6 h-6"
         fill="none"
         stroke="currentColor"
-        viewBox="0 0 24 24">
+        viewBox="0 0 24 24"
+      >
 
         <path
           stroke-linecap="round"
           stroke-linejoin="round"
           stroke-width="1.5"
-          d="M6 18 18 6M6 6l12 12"/>
+          d="M6 18 18 6M6 6l12 12"
+        />
+
       </svg>
 
     </button>
 
   </div>
 
-  <!-- Navegação -->
+
+  <!-- ========================================================
+       NAVEGAÇÃO
+       ======================================================== -->
+
   <nav class="p-6">
 
-    <div class="flex flex-col gap-2">
+    <div class="flex flex-col">
+
+
+      <!-- ====================================================
+           INÍCIO
+           ==================================================== -->
 
       <button
         type="button"
         onclick="switchTab('menu'); fecharMenuMobile()"
-        class="text-left py-4 border-b border-[#E8DED6] text-xs font-semibold tracking-[0.2em] uppercase text-[#5F5148]">
+        class="group text-left py-4 border-b border-[#E8DED5] text-xs font-semibold tracking-[0.2em] uppercase text-[#5F5148] hover:text-[#9E7960] transition-colors"
+      >
 
-        Início
+        <span class="flex items-center justify-between">
+
+          Início
+
+          <svg
+            class="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1.5"
+              d="M9 5l7 7-7 7"
+            />
+
+          </svg>
+
+        </span>
 
       </button>
+
+
+      <!-- ====================================================
+           COLEÇÃO
+           ==================================================== -->
 
       <button
         type="button"
         onclick="switchTab('menu'); fecharMenuMobile()"
-        class="text-left py-4 border-b border-[#E8DED6] text-xs font-semibold tracking-[0.2em] uppercase text-[#5F5148]">
+        class="group text-left py-4 border-b border-[#E8DED5] text-xs font-semibold tracking-[0.2em] uppercase text-[#5F5148] hover:text-[#9E7960] transition-colors"
+      >
 
-        Coleção
+        <span class="flex items-center justify-between">
+
+          Coleção
+
+          <svg
+            class="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1.5"
+              d="M9 5l7 7-7 7"
+            />
+
+          </svg>
+
+        </span>
 
       </button>
+
+
+      <!-- ====================================================
+           LINGERIE
+           ==================================================== -->
+
+      <button
+        type="button"
+        onclick="switchTab('menu'); fecharMenuMobile()"
+        class="group text-left py-4 border-b border-[#E8DED5] text-xs font-semibold tracking-[0.2em] uppercase text-[#5F5148] hover:text-[#9E7960] transition-colors"
+      >
+
+        <span class="flex items-center justify-between">
+
+          Lingerie
+
+          <svg
+            class="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1.5"
+              d="M9 5l7 7-7 7"
+            />
+
+          </svg>
+
+        </span>
+
+      </button>
+
+
+      <!-- ====================================================
+           ESSENCIAIS
+           ==================================================== -->
+
+      <button
+        type="button"
+        onclick="switchTab('menu'); fecharMenuMobile()"
+        class="group text-left py-4 border-b border-[#E8DED5] text-xs font-semibold tracking-[0.2em] uppercase text-[#5F5148] hover:text-[#9E7960] transition-colors"
+      >
+
+        <span class="flex items-center justify-between">
+
+          Essenciais
+
+          <svg
+            class="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1.5"
+              d="M9 5l7 7-7 7"
+            />
+
+          </svg>
+
+        </span>
+
+      </button>
+
+
+      <!-- ====================================================
+           GUIA DE TAMANHOS
+           ==================================================== -->
+
+      <button
+        type="button"
+        onclick="switchTab('sizes'); fecharMenuMobile()"
+        class="group text-left py-4 border-b border-[#E8DED5] text-xs font-semibold tracking-[0.2em] uppercase text-[#5F5148] hover:text-[#9E7960] transition-colors"
+      >
+
+        <span class="flex items-center justify-between">
+
+          Guia de Tamanhos
+
+          <svg
+            class="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1.5"
+              d="M9 5l7 7-7 7"
+            />
+
+          </svg>
+
+        </span>
+
+      </button>
+
+
+      <!-- ====================================================
+           MEUS PEDIDOS
+           ==================================================== -->
 
       <button
         type="button"
         onclick="switchTab('orders'); fecharMenuMobile()"
-        class="text-left py-4 border-b border-[#E8DED6] text-xs font-semibold tracking-[0.2em] uppercase text-[#5F5148]">
+        class="group text-left py-4 border-b border-[#E8DED5] text-xs font-semibold tracking-[0.2em] uppercase text-[#5F5148] hover:text-[#9E7960] transition-colors"
+      >
 
-        Meus Pedidos
+        <span class="flex items-center justify-between">
+
+          Meus Pedidos
+
+          <svg
+            class="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1.5"
+              d="M9 5l7 7-7 7"
+            />
+
+          </svg>
+
+        </span>
 
       </button>
 
-      <button
-        type="button"
-        onclick="switchTab('menu'); fecharMenuMobile()"
-        class="text-left py-4 border-b border-[#E8DED6] text-xs font-semibold tracking-[0.2em] uppercase text-[#5F5148]">
-
-        Lingerie
-
-      </button>
-
-      <button
-        type="button"
-        onclick="switchTab('menu'); fecharMenuMobile()"
-        class="text-left py-4 border-b border-[#E8DED6] text-xs font-semibold tracking-[0.2em] uppercase text-[#5F5148]">
-
-        Essenciais
-
-      </button>
 
     </div>
 
   </nav>
+
+
+  <!-- ========================================================
+       RODAPÉ DO MENU
+       ======================================================== -->
+
+  <div
+    class="absolute bottom-0 left-0 right-0 px-6 py-5 border-t border-[#E8DED5]"
+  >
+
+    <p
+      class="text-[10px] tracking-[0.18em] uppercase text-[#9E7960] text-center"
+    >
+      Elegância em cada detalhe
+    </p>
+
+  </div>
 
 </aside>
 
@@ -212,13 +423,68 @@
         </svg>
       </button>
 
-      <nav class="hidden md:flex items-center gap-8 text-xs font-semibold tracking-widest uppercase text-[#8C7A6B]">
-        <a href="javascript:void(0)" onclick="switchTab('menu')" class="hover:text-[#26211E] transition-colors relative py-1 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[1px] after:bg-[#9E7960] hover:after:w-full after:transition-all">Inicio</a>
-        <a href="#" class="hover:text-[#26211E] transition-colors relative py-1 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[1px] after:bg-[#9E7960] hover:after:w-full after:transition-all">Coleção</a>
-        <a href="javascript:void(0)" onclick="switchTab('orders')" class="hover:text-[#26211E] transition-colors relative py-1 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[1px] after:bg-[#9E7960] hover:after:w-full after:transition-all">Meus Pedidos</a>
-        <a href="#" class="hover:text-[#26211E] transition-colors relative py-1 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[1px] after:bg-[#9E7960] hover:after:w-full after:transition-all">Lingerie</a>
-        <a href="#" class="hover:text-[#26211E] transition-colors relative py-1 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[1px] after:bg-[#9E7960] hover:after:w-full after:transition-all">Essenciais</a>
-      </nav>
+     <nav class="hidden md:flex items-center gap-8 text-xs font-semibold tracking-widest uppercase text-[#8C7A6B]">
+
+  <!-- Início -->
+  <a
+    href="javascript:void(0)"
+    onclick="switchTab('menu')"
+    class="hover:text-[#26211E] transition-colors relative py-1 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[1px] after:bg-[#9E7960] hover:after:w-full after:transition-all"
+  >
+    Início
+  </a>
+
+
+  <!-- Coleção -->
+  <a
+    href="javascript:void(0)"
+    onclick="switchTab('menu')"
+    class="hover:text-[#26211E] transition-colors relative py-1 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[1px] after:bg-[#9E7960] hover:after:w-full after:transition-all"
+  >
+    Coleção
+  </a>
+
+
+  <!-- Lingerie -->
+  <a
+    href="javascript:void(0)"
+    onclick="switchTab('menu')"
+    class="hover:text-[#26211E] transition-colors relative py-1 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[1px] after:bg-[#9E7960] hover:after:w-full after:transition-all"
+  >
+    Lingerie
+  </a>
+
+
+  <!-- Essenciais -->
+  <a
+    href="javascript:void(0)"
+    onclick="switchTab('menu')"
+    class="hover:text-[#26211E] transition-colors relative py-1 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[1px] after:bg-[#9E7960] hover:after:w-full after:transition-all"
+  >
+    Essenciais
+  </a>
+
+
+  <!-- Guia de Tamanhos -->
+  <a
+    href="javascript:void(0)"
+    onclick="switchTab('sizes')"
+    class="hover:text-[#26211E] transition-colors relative py-1 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[1px] after:bg-[#9E7960] hover:after:w-full after:transition-all"
+  >
+    Guia de Tamanhos
+  </a>
+
+
+  <!-- Meus Pedidos -->
+  <a
+    href="javascript:void(0)"
+    onclick="switchTab('orders')"
+    class="hover:text-[#26211E] transition-colors relative py-1 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[1px] after:bg-[#9E7960] hover:after:w-full after:transition-all"
+  >
+    Meus Pedidos
+  </a>
+
+</nav>
     </div>
 
     <!-- Centro: Logo Tipográfica Luxuosa -->
@@ -937,6 +1203,213 @@ onclick="alert('🔥 CLIQUE DIRETO NO BOTÃO FUNCIONOU!')"
 </button>
   </div>
 </div>
+
+      <!-- ==========================================================
+     TABELA DE TAMANHOS — ESSENZA ÍNTIMAS
+     ========================================================== -->
+<section id="tabela-tamanhos" class="py-16 px-4 bg-[#F8F5F2]">
+  <div class="max-w-5xl mx-auto">
+
+    <!-- Cabeçalho -->
+    <div class="text-center mb-10">
+      <span
+        class="inline-block text-[#9E7960] text-sm font-semibold tracking-[0.2em] uppercase mb-3"
+      >
+        Guia de medidas
+      </span>
+
+      <h2
+        class="text-3xl sm:text-4xl font-bold text-[#26211E] mb-4"
+      >
+        Encontre o tamanho ideal
+      </h2>
+
+      <p
+        class="max-w-2xl mx-auto text-[#6F625A] text-sm sm:text-base leading-relaxed"
+      >
+        Confira nossas medidas para escolher o tamanho que proporciona
+        o melhor caimento, conforto e segurança para você.
+      </p>
+    </div>
+
+    <!-- Card -->
+    <div
+      class="bg-white rounded-2xl shadow-sm border border-[#E8DED5] overflow-hidden"
+    >
+
+      <!-- Título da tabela -->
+      <div
+        class="px-5 sm:px-8 py-5 border-b border-[#E8DED5] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2"
+      >
+        <div>
+          <h3 class="text-lg font-bold text-[#26211E]">
+            Medidas femininas
+          </h3>
+
+          <p class="text-sm text-[#8A7A70] mt-1">
+            Medidas aproximadas em centímetros
+          </p>
+        </div>
+
+        <span
+          class="text-xs font-semibold text-[#9E7960] bg-[#F8F5F2] px-3 py-2 rounded-full"
+        >
+          Essenza Íntimas
+        </span>
+      </div>
+
+      <!-- Tabela -->
+      <div class="overflow-x-auto">
+        <table class="w-full min-w-[600px] text-sm text-left">
+
+          <thead>
+            <tr class="bg-[#26211E] text-white">
+              <th class="px-5 py-4 font-semibold">
+                Tamanho
+              </th>
+
+              <th class="px-5 py-4 font-semibold">
+                Busto
+              </th>
+
+              <th class="px-5 py-4 font-semibold">
+                Cintura
+              </th>
+
+              <th class="px-5 py-4 font-semibold">
+                Quadril
+              </th>
+            </tr>
+          </thead>
+
+          <tbody class="divide-y divide-[#E8DED5]">
+
+            <!-- PP -->
+            <tr class="hover:bg-[#F8F5F2] transition-colors">
+              <td class="px-5 py-4">
+                <span class="font-bold text-[#9E7960]">
+                  PP
+                </span>
+              </td>
+              <td class="px-5 py-4 text-[#514741]">78 – 82 cm</td>
+              <td class="px-5 py-4 text-[#514741]">60 – 64 cm</td>
+              <td class="px-5 py-4 text-[#514741]">84 – 88 cm</td>
+            </tr>
+
+            <!-- P -->
+            <tr class="hover:bg-[#F8F5F2] transition-colors">
+              <td class="px-5 py-4">
+                <span class="font-bold text-[#9E7960]">
+                  P
+                </span>
+              </td>
+              <td class="px-5 py-4 text-[#514741]">83 – 87 cm</td>
+              <td class="px-5 py-4 text-[#514741]">65 – 69 cm</td>
+              <td class="px-5 py-4 text-[#514741]">89 – 93 cm</td>
+            </tr>
+
+            <!-- M -->
+            <tr class="hover:bg-[#F8F5F2] transition-colors">
+              <td class="px-5 py-4">
+                <span class="font-bold text-[#9E7960]">
+                  M
+                </span>
+              </td>
+              <td class="px-5 py-4 text-[#514741]">88 – 92 cm</td>
+              <td class="px-5 py-4 text-[#514741]">70 – 74 cm</td>
+              <td class="px-5 py-4 text-[#514741]">94 – 98 cm</td>
+            </tr>
+
+            <!-- G -->
+            <tr class="hover:bg-[#F8F5F2] transition-colors">
+              <td class="px-5 py-4">
+                <span class="font-bold text-[#9E7960]">
+                  G
+                </span>
+              </td>
+              <td class="px-5 py-4 text-[#514741]">93 – 97 cm</td>
+              <td class="px-5 py-4 text-[#514741]">75 – 79 cm</td>
+              <td class="px-5 py-4 text-[#514741]">99 – 103 cm</td>
+            </tr>
+
+            <!-- GG -->
+            <tr class="hover:bg-[#F8F5F2] transition-colors">
+              <td class="px-5 py-4">
+                <span class="font-bold text-[#9E7960]">
+                  GG
+                </span>
+              </td>
+              <td class="px-5 py-4 text-[#514741]">98 – 103 cm</td>
+              <td class="px-5 py-4 text-[#514741]">80 – 85 cm</td>
+              <td class="px-5 py-4 text-[#514741]">104 – 109 cm</td>
+            </tr>
+
+            <!-- XG -->
+            <tr class="hover:bg-[#F8F5F2] transition-colors">
+              <td class="px-5 py-4">
+                <span class="font-bold text-[#9E7960]">
+                  XG
+                </span>
+              </td>
+              <td class="px-5 py-4 text-[#514741]">104 – 110 cm</td>
+              <td class="px-5 py-4 text-[#514741]">86 – 92 cm</td>
+              <td class="px-5 py-4 text-[#514741]">110 – 116 cm</td>
+            </tr>
+
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Rodapé -->
+      <div
+        class="px-5 sm:px-8 py-6 bg-[#F8F5F2] border-t border-[#E8DED5]"
+      >
+        <div class="flex gap-3 items-start">
+
+          <div
+            class="w-9 h-9 shrink-0 rounded-full bg-[#E8DED5] flex items-center justify-center text-[#9E7960]"
+          >
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="1.8"
+                d="M13 16h-1v-4h-1m1-4h.01M12 20a8 8 0 100-16 8 8 0 000 16z"
+              />
+            </svg>
+          </div>
+
+          <div>
+            <h4 class="font-semibold text-[#26211E] text-sm">
+              Como medir?
+            </h4>
+
+            <p class="text-sm text-[#6F625A] mt-1 leading-relaxed">
+              Utilize uma fita métrica sobre o corpo, sem apertar.
+              Para maior precisão, faça as medidas usando roupas leves
+              ou diretamente sobre a pele.
+            </p>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Observação -->
+    <p class="text-center text-xs text-[#8A7A70] mt-5">
+      As medidas podem variar de acordo com o modelo e a elasticidade
+      da peça. Em caso de dúvida, recomendamos escolher o tamanho
+      conforme suas medidas corporais.
+    </p>
+
+  </div>
+</section>
 
 <!-- ============================================================
      BENEFÍCIOS — ESSENZA ÍNTIMAS
