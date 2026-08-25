@@ -596,14 +596,19 @@ function switchTab(tab) {
     "auth-section",
     "orders-section",
 
-    // Seções da Home
+    // ==========================================================
+    // SEÇÕES DA HOME
+    // ==========================================================
+    "mais-vendidos-section",
     "benefits-section",
     "why-essenza-section",
     "reviews-section",
     "instagram-section",
     "faq-section",
 
-    // Guia de tamanhos
+    // ==========================================================
+    // GUIA DE TAMANHOS
+    // ==========================================================
     "tabela-tamanhos"
   ];
 
@@ -624,33 +629,66 @@ function switchTab(tab) {
 
 
   // ============================================================
-  // HOME / MENU
+  // 🏠 HOME / MENU
   // ============================================================
 
   if (tab === "menu") {
 
     const homeSections = [
+
+      // Menu / Produtos
       "menu-section",
+
+      // ✨ Mais Vendidos
+      "mais-vendidos-section",
+
+      // Outras seções da Home
       "benefits-section",
       "why-essenza-section",
       "reviews-section",
       "instagram-section",
       "faq-section"
+
     ];
+
+
+    // ----------------------------------------------------------
+    // MOSTRA TODAS AS SEÇÕES DA HOME
+    // ----------------------------------------------------------
 
     homeSections.forEach((sectionId) => {
 
-      document
-        .getElementById(sectionId)
-        ?.classList.remove("hidden");
+      const element =
+        document.getElementById(sectionId);
+
+      if (element) {
+        element.classList.remove("hidden");
+      }
 
     });
+
+
+    // ----------------------------------------------------------
+    // ✨ CARREGA OS MAIS VENDIDOS
+    // ----------------------------------------------------------
+
+    if (typeof carregarMaisVendidos === "function") {
+
+      carregarMaisVendidos();
+
+    } else {
+
+      console.warn(
+        "⚠️ carregarMaisVendidos() não está disponível."
+      );
+
+    }
 
   }
 
 
   // ============================================================
-  // CARRINHO
+  // 🛒 CARRINHO
   // ============================================================
 
   else if (tab === "cart") {
@@ -659,15 +697,18 @@ function switchTab(tab) {
       .getElementById("cart-section")
       ?.classList.remove("hidden");
 
+
     if (typeof renderCart === "function") {
+
       renderCart();
+
     }
 
   }
 
 
   // ============================================================
-  // DETALHES DO PRODUTO
+  // 🛍️ DETALHES DO PRODUTO
   // ============================================================
 
   else if (tab === "details") {
@@ -680,7 +721,7 @@ function switchTab(tab) {
 
 
   // ============================================================
-  // LOGIN / AUTENTICAÇÃO
+  // 🔐 LOGIN / AUTENTICAÇÃO
   // ============================================================
 
   else if (tab === "auth") {
@@ -693,7 +734,7 @@ function switchTab(tab) {
 
 
   // ============================================================
-  // PEDIDOS
+  // 📦 PEDIDOS
   // ============================================================
 
   else if (tab === "orders") {
@@ -709,13 +750,18 @@ function switchTab(tab) {
         document.getElementById("search-phone");
 
       if (searchPhone) {
+
         searchPhone.value =
           currentUser.profile.phone;
+
       }
 
       if (typeof fetchOrdersByPhone === "function") {
+
         fetchOrdersByPhone();
+
       }
+
     }
     */
 
@@ -723,7 +769,7 @@ function switchTab(tab) {
 
 
   // ============================================================
-  // TABELA DE TAMANHOS
+  // 📏 TABELA DE TAMANHOS
   // ============================================================
 
   else if (tab === "sizes") {
@@ -736,7 +782,7 @@ function switchTab(tab) {
 
 
   // ============================================================
-  // ABA INVÁLIDA
+  // ⚠️ ABA INVÁLIDA
   // ============================================================
 
   else {
@@ -745,7 +791,11 @@ function switchTab(tab) {
       `⚠️ Aba "${tab}" não encontrada.`
     );
 
-    // Volta para a Home
+
+    // ----------------------------------------------------------
+    // VOLTA PARA A HOME
+    // ----------------------------------------------------------
+
     document
       .getElementById("menu-section")
       ?.classList.remove("hidden");
@@ -754,7 +804,7 @@ function switchTab(tab) {
 
 
   // ============================================================
-  // VOLTA PARA O TOPO
+  // ⬆️ VOLTA PARA O TOPO
   // ============================================================
 
   window.scrollTo({
@@ -764,10 +814,14 @@ function switchTab(tab) {
 
 
   // ============================================================
-  // SALVA A ABA ATUAL
+  // 💾 SALVA A ABA ATUAL
   // ============================================================
 
-  localStorage.setItem("lastTab", tab);
+  localStorage.setItem(
+    "lastTab",
+    tab
+  );
+
 }
 
 // ============================================================
@@ -5281,10 +5335,7 @@ async function carregarMaisVendidos() {
     }
 
 
-    debugAlert(
-        "🔵 MAIS VENDIDOS — INÍCIO",
-        "A função carregarMaisVendidos() foi iniciada."
-    );
+    
 
 
     console.log(
@@ -5331,32 +5382,16 @@ async function carregarMaisVendidos() {
     }
 
 
-    debugAlert(
-        "🟢 ELEMENTOS OK",
-        "Section e container dos Mais Vendidos encontrados."
-    );
-
+    
 
     // ========================================================
     // CONFIGURAÇÃO DA API
     // ========================================================
 
-    debugAlert(
-        "🔵 CONFIGURAÇÃO API",
-        "API_BASE_URL:\n" +
-        typeof API_URL !== "undefined"
-            ? API_URL
-            : "API_BASE_URL NÃO EXISTE"
-    );
+    
 
 
-    debugAlert(
-        "🔵 CONFIGURAÇÃO API",
-        "API_URL:\n" +
-        typeof API_URL !== "undefined"
-            ? API_URL
-            : "API_URL NÃO EXISTE"
-    );
+    
 
 
     try {
@@ -5378,11 +5413,7 @@ async function carregarMaisVendidos() {
             `https://essenzaintimasapi.onrender.com/pedidos`;
 
 
-        debugAlert(
-            "🔵 ETAPA 1 — PEDIDOS",
-            "Tentando acessar:\n\n" +
-            pedidosUrl
-        );
+        
 
 
         console.log(
@@ -5397,13 +5428,7 @@ async function carregarMaisVendidos() {
             );
 
 
-        debugAlert(
-            "🟢 RESPOSTA PEDIDOS",
-            "HTTP Status:\n" +
-            pedidosResponse.status +
-            "\n\nOK:\n" +
-            pedidosResponse.ok
-        );
+        
 
 
         if (!pedidosResponse.ok) {
@@ -5420,22 +5445,7 @@ async function carregarMaisVendidos() {
             await pedidosResponse.json();
 
 
-        debugAlert(
-            "🟢 JSON PEDIDOS",
-            "Resposta recebida.\n\n" +
-            "Tipo: " +
-            typeof pedidosData +
-            "\n\n" +
-            "Array: " +
-            Array.isArray(pedidosData) +
-            "\n\n" +
-            "Quantidade: " +
-            (
-                Array.isArray(pedidosData)
-                    ? pedidosData.length
-                    : "Não é array"
-            )
-        );
+        
 
 
         console.log(
@@ -5470,11 +5480,7 @@ async function carregarMaisVendidos() {
         }
 
 
-        debugAlert(
-            "🟢 PEDIDOS NORMALIZADOS",
-            "Total de pedidos:\n\n" +
-            pedidos.length
-        );
+        
 
 
         // ====================================================
@@ -5629,25 +5635,7 @@ async function carregarMaisVendidos() {
         // DEBUG DAS VENDAS
         // ====================================================
 
-        debugAlert(
-            "🟢 ETAPA 2 — VENDAS",
-            "Pedidos analisados: " +
-            pedidos.length +
-
-            "\n\nPedidos DELIVERED: " +
-            pedidosDelivered +
-
-            "\n\nItens encontrados: " +
-            itensEncontrados +
-
-            "\n\nItens com productId: " +
-            produtosEncontrados +
-
-            "\n\nProdutos diferentes vendidos: " +
-            Object.keys(
-                vendasPorProduto
-            ).length
-        );
+        
 
 
         console.log(
@@ -5678,19 +5666,7 @@ async function carregarMaisVendidos() {
         );
 
 
-        debugAlert(
-            "🏆 ETAPA 3 — TOP 3",
-            ranking.length === 0
-
-                ? "NENHUM produto entrou no ranking."
-
-                : ranking
-                    .map(
-                        (item, index) =>
-                            `${index + 1}º — ${item.name} — ${item.quantity} unidades`
-                    )
-                    .join("\n\n")
-        );
+        
 
 
         if (
@@ -5715,11 +5691,7 @@ async function carregarMaisVendidos() {
         // 4. PRODUTOS
         // ====================================================
 
-        debugAlert(
-            "🔵 ETAPA 4 — PRODUTOS",
-            "Buscando produtos em:\n\n" +
-            API_URL
-        );
+        
 
 
         const productsResponse =
@@ -5728,14 +5700,7 @@ async function carregarMaisVendidos() {
             );
 
 
-        debugAlert(
-            "🟢 RESPOSTA PRODUTOS",
-            "HTTP Status:\n" +
-            productsResponse.status +
-
-            "\n\nOK:\n" +
-            productsResponse.ok
-        );
+        
 
 
         if (!productsResponse.ok) {
@@ -5771,11 +5736,7 @@ async function carregarMaisVendidos() {
                 );
 
 
-        debugAlert(
-            "🟢 PRODUTOS RECEBIDOS",
-            "Total de produtos:\n\n" +
-            products.length
-        );
+        
 
 
         if (
@@ -5793,10 +5754,7 @@ async function carregarMaisVendidos() {
         // 5. CRUZAR IDs
         // ====================================================
 
-        debugAlert(
-            "🔵 ETAPA 5 — CRUZAMENTO",
-            "Comparando productId dos pedidos com id dos produtos."
-        );
+        
 
 
         const topProducts =
@@ -5842,26 +5800,7 @@ async function carregarMaisVendidos() {
                 .filter(Boolean);
 
 
-        debugAlert(
-            "🟢 CRUZAMENTO FINALIZADO",
-            "Produtos encontrados para o ranking:\n\n" +
-            topProducts.length +
-
-            "\n\n" +
-
-            (
-                topProducts.length > 0
-
-                    ? topProducts
-                        .map(
-                            (p, i) =>
-                                `${i + 1}º ${p.name} — ${p.quantidadeVendida} vendidos`
-                        )
-                        .join("\n")
-
-                    : "NENHUM"
-            )
-        );
+        
 
 
         if (
@@ -5879,10 +5818,7 @@ async function carregarMaisVendidos() {
         // 6. RENDERIZAR
         // ====================================================
 
-        debugAlert(
-            "🔵 ETAPA 6 — RENDERIZAÇÃO",
-            "Começando a montar os cards."
-        );
+        
 
 
         container.innerHTML =
@@ -6265,15 +6201,7 @@ async function carregarMaisVendidos() {
         // VERIFICAR HTML
         // ====================================================
 
-        debugAlert(
-            "🟢 HTML GERADO",
-            "Cards gerados:\n\n" +
-            topProducts.length +
-
-            "\n\nHTML no container:\n" +
-            container.innerHTML.length +
-            " caracteres."
-        );
+        
 
 
         // ====================================================
@@ -6285,12 +6213,7 @@ async function carregarMaisVendidos() {
         );
 
 
-        debugAlert(
-            "🎉 SUCESSO",
-            "Mais Vendidos carregado corretamente!\n\n" +
-            "Produtos exibidos: " +
-            topProducts.length
-        );
+        
 
 
     } catch (error) {
