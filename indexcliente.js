@@ -581,6 +581,7 @@ function switchTab(tab) {
   // ============================================================
 
   const sections = [
+    // Navegação principal
     "menu-section",
     "cart-section",
     "details-section",
@@ -592,12 +593,15 @@ function switchTab(tab) {
     "why-essenza-section",
     "reviews-section",
     "instagram-section",
-    "faq-section"
+    "faq-section",
+
+    // Guia de tamanhos
+    "tabela-tamanhos"
   ];
 
 
   // ============================================================
-  // ESCONDE TODAS
+  // ESCONDE TODAS AS SEÇÕES
   // ============================================================
 
   sections.forEach((sectionId) => {
@@ -612,34 +616,28 @@ function switchTab(tab) {
 
 
   // ============================================================
-  // MOSTRA A ABA SOLICITADA
+  // HOME / MENU
   // ============================================================
 
   if (tab === "menu") {
 
-    document
-      .getElementById("menu-section")
-      ?.classList.remove("hidden");
+    const homeSections = [
+      "menu-section",
+      "benefits-section",
+      "why-essenza-section",
+      "reviews-section",
+      "instagram-section",
+      "faq-section"
+    ];
 
-    document
-      .getElementById("benefits-section")
-      ?.classList.remove("hidden");
+    homeSections.forEach((sectionId) => {
 
-    document
-      .getElementById("why-essenza-section")
-      ?.classList.remove("hidden");
+      document
+        .getElementById(sectionId)
+        ?.classList.remove("hidden");
 
-    document
-      .getElementById("reviews-section")
-      ?.classList.remove("hidden");
+    });
 
-    document
-      .getElementById("instagram-section")
-      ?.classList.remove("hidden");
-
-    document
-      .getElementById("faq-section")
-      ?.classList.remove("hidden");
   }
 
 
@@ -656,6 +654,7 @@ function switchTab(tab) {
     if (typeof renderCart === "function") {
       renderCart();
     }
+
   }
 
 
@@ -668,6 +667,7 @@ function switchTab(tab) {
     document
       .getElementById("details-section")
       ?.classList.remove("hidden");
+
   }
 
 
@@ -680,6 +680,7 @@ function switchTab(tab) {
     document
       .getElementById("auth-section")
       ?.classList.remove("hidden");
+
   }
 
 
@@ -709,11 +710,43 @@ function switchTab(tab) {
       }
     }
     */
+
   }
 
 
   // ============================================================
-  // TOPO DA PÁGINA
+  // TABELA DE TAMANHOS
+  // ============================================================
+
+  else if (tab === "sizes") {
+
+    document
+      .getElementById("tabela-tamanhos")
+      ?.classList.remove("hidden");
+
+  }
+
+
+  // ============================================================
+  // ABA INVÁLIDA
+  // ============================================================
+
+  else {
+
+    console.warn(
+      `⚠️ Aba "${tab}" não encontrada.`
+    );
+
+    // Volta para a Home
+    document
+      .getElementById("menu-section")
+      ?.classList.remove("hidden");
+
+  }
+
+
+  // ============================================================
+  // VOLTA PARA O TOPO
   // ============================================================
 
   window.scrollTo({
