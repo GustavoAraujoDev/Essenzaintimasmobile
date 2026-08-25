@@ -5265,9 +5265,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function carregarMaisVendidos() {
 
-    console.log(
-        "✨ Iniciando carregamento dos Mais Vendidos..."
-    );
+    console.log("✨ Iniciando carregamento dos Mais Vendidos...");
+
+    // ========================================================
+    // ALERTA INICIAL
+    // ========================================================
+
+    Swal.fire({
+        title: "🔍 Debug Mais Vendidos",
+        html: `
+            <div style="text-align:left">
+                <p>🚀 Iniciando carregamento...</p>
+                <p>⏳ Aguarde...</p>
+            </div>
+        `,
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
 
 
     // ========================================================
@@ -5275,21 +5291,45 @@ async function carregarMaisVendidos() {
     // ========================================================
 
     const section =
-        document.getElementById(
-            "mais-vendidos-section"
-        );
+        document.getElementById("mais-vendidos-section");
 
     const container =
-        document.getElementById(
-            "mais-vendidos-container"
-        );
+        document.getElementById("mais-vendidos-container");
 
 
     if (!section || !container) {
 
-        console.warn(
-            "⚠️ Seção Mais Vendidos não encontrada."
-        );
+        console.error("❌ Elementos não encontrados.");
+
+        Swal.close();
+
+        Swal.fire({
+            icon: "error",
+            title: "Erro no HTML",
+            html: `
+                <div style="text-align:left">
+                    <p>❌ A seção ou container não foi encontrado.</p>
+
+                    <hr>
+
+                    <p><b>Section:</b>
+                        ${section ? "✅ Encontrada" : "❌ Não encontrada"}
+                    </p>
+
+                    <p><b>Container:</b>
+                        ${container ? "✅ Encontrado" : "❌ Não encontrado"}
+                    </p>
+
+                    <hr>
+
+                    <code>
+                        #mais-vendidos-section
+                        <br>
+                        #mais-vendidos-container
+                    </code>
+                </div>
+            `
+        });
 
         return;
     }
@@ -5301,15 +5341,23 @@ async function carregarMaisVendidos() {
         // 1. BUSCAR PEDIDOS
         // ====================================================
 
-        console.log(
-            "📦 Buscando pedidos..."
-        );
+        console.log("📦 Buscando pedidos...");
+
+        const pedidosURL =
+            "https://essenzaintimasapi.onrender.com/pedidos";
+
+
+        console.log("🌐 URL pedidos:", pedidosURL);
 
 
         const pedidosResponse =
-            await fetch(
-                `https://essenzaintimasapi.onrender.com/pedidos`
-            );
+            await fetch(pedidosURL);
+
+
+        console.log(
+            "📡 Status pedidos:",
+            pedidosResponse.status
+        );
 
 
         if (!pedidosResponse.ok) {
@@ -5323,6 +5371,12 @@ async function carregarMaisVendidos() {
 
         const pedidosData =
             await pedidosResponse.json();
+
+
+        console.log(
+            "📦 RESPOSTA COMPLETA PEDIDOS:",
+            pedidosData
+        );
 
 
         // ====================================================
@@ -5342,6 +5396,12 @@ async function carregarMaisVendidos() {
                 );
 
 
+        console.log(
+            "📦 PEDIDOS NORMALIZADOS:",
+            pedidos
+        );
+
+
         if (!Array.isArray(pedidos)) {
 
             throw new Error(
@@ -5351,9 +5411,41 @@ async function carregarMaisVendidos() {
         }
 
 
-        console.log(
-            `📦 ${pedidos.length} pedidos encontrados.`
-        );
+        // ====================================================
+        // ALERTA — PEDIDOS
+        // ====================================================
+
+        Swal.close();
+
+        await Swal.fire({
+            icon: "info",
+            title: "📦 Pedidos encontrados",
+            html: `
+                <div style="text-align:left">
+
+                    <p>
+                        Foram encontrados
+                        <strong>${pedidos.length}</strong>
+                        pedidos.
+                    </p>
+
+                    <hr>
+
+                    <p>
+                        🌐 Status HTTP:
+                        <strong>${pedidosResponse.status}</strong>
+                    </p>
+
+                    <p>
+                        📊 Tipo:
+                        <strong>${Array.isArray(pedidos) ? "Array" : typeof pedidos}</strong>
+                    </p>
+
+                </div>
+            `,
+            timer: 1800,
+            showConfirmButton: false
+        });
 
 
         // ====================================================
@@ -5362,9 +5454,19 @@ async function carregarMaisVendidos() {
 
         const vendasPorProduto = {};
 
+        let pedidosEntregues = 0;
+        let pedidosIgnorados = 0;
+        let itensProcessados = 0;
+
 
         pedidos.forEach(
-            (pedido) => {
+            (pedido, pedidoIndex) => {
+
+                console.log(
+                    `📦 Pedido #${pedidoIndex + 1}:`,
+                    pedido
+                );
+
 
                 // ============================================
                 // STATUS
@@ -5378,36 +5480,59 @@ async function carregarMaisVendidos() {
                     ).toUpperCase();
 
 
+                console.log(
+                    `📌 Pedido #${pedidoIndex + 1} STATUS:`,
+                    status
+                );
+
+
                 // ============================================
                 // SOMENTE ENTREGUES
                 // ============================================
 
-                if (
-                    status !== "DELIVERED"
-                ) {
+                if (status !== "DELIVERED") {
+
+                    pedidosIgnorados++;
+
+                    console.log(
+                        `⏭️ Pedido #${pedidoIndex + 1} ignorado. Status: ${status}`
+                    );
 
                     return;
-
                 }
+
+
+                pedidosEntregues++;
 
 
                 // ============================================
                 // ITENS
                 // ============================================
 
-                if (
-                    !Array.isArray(
+                if (!Array.isArray(pedido.itens)) {
+
+                    console.warn(
+                        `⚠️ Pedido #${pedidoIndex + 1} não possui itens:`,
                         pedido.itens
-                    )
-                ) {
+                    );
 
                     return;
-
                 }
 
 
+                console.log(
+                    `🛍️ Pedido #${pedidoIndex + 1} possui ${pedido.itens.length} itens.`
+                );
+
+
                 pedido.itens.forEach(
-                    (item) => {
+                    (item, itemIndex) => {
+
+                        console.log(
+                            `🛍️ Item ${itemIndex + 1}:`,
+                            item
+                        );
+
 
                         const productId =
                             item.productId;
@@ -5415,8 +5540,12 @@ async function carregarMaisVendidos() {
 
                         if (!productId) {
 
-                            return;
+                            console.warn(
+                                "⚠️ Item sem productId:",
+                                item
+                            );
 
+                            return;
                         }
 
 
@@ -5426,13 +5555,19 @@ async function carregarMaisVendidos() {
                             );
 
 
-                        if (
-                            quantidade <= 0
-                        ) {
+                        if (quantidade <= 0) {
+
+                            console.warn(
+                                "⚠️ Quantidade inválida:",
+                                quantidade,
+                                item
+                            );
 
                             return;
-
                         }
+
+
+                        itensProcessados++;
 
 
                         // ====================================
@@ -5440,9 +5575,7 @@ async function carregarMaisVendidos() {
                         // ====================================
 
                         if (
-                            !vendasPorProduto[
-                                productId
-                            ]
+                            !vendasPorProduto[productId]
                         ) {
 
                             vendasPorProduto[
@@ -5470,10 +5603,21 @@ async function carregarMaisVendidos() {
                             productId
                         ].quantity += quantidade;
 
+
+                        console.log(
+                            `➕ Produto ${productId}: +${quantidade}`
+                        );
+
                     }
                 );
 
             }
+        );
+
+
+        console.log(
+            "📊 VENDAS POR PRODUTO:",
+            vendasPorProduto
         );
 
 
@@ -5500,6 +5644,70 @@ async function carregarMaisVendidos() {
 
 
         // ====================================================
+        // ALERTA — RANKING
+        // ====================================================
+
+        await Swal.fire({
+            icon: ranking.length > 0
+                ? "success"
+                : "warning",
+
+            title: "🏆 Resultado do Ranking",
+
+            html: `
+                <div style="text-align:left">
+
+                    <p>
+                        📦 Total de pedidos:
+                        <strong>${pedidos.length}</strong>
+                    </p>
+
+                    <p>
+                        ✅ Entregues:
+                        <strong>${pedidosEntregues}</strong>
+                    </p>
+
+                    <p>
+                        ⏭️ Ignorados:
+                        <strong>${pedidosIgnorados}</strong>
+                    </p>
+
+                    <p>
+                        🛍️ Itens processados:
+                        <strong>${itensProcessados}</strong>
+                    </p>
+
+                    <hr>
+
+                    ${
+                        ranking.length
+                            ? ranking.map(
+                                (item, index) => `
+                                    <p>
+                                        <strong>${index + 1}º</strong>
+                                        ${item.name}
+                                        —
+                                        <strong>${item.quantity}</strong>
+                                        vendas
+                                    </p>
+                                `
+                              ).join("")
+                            : `
+                                <p>
+                                    ❌ Nenhum produto vendido
+                                    em pedidos DELIVERED.
+                                </p>
+                            `
+                    }
+
+                </div>
+            `,
+
+            confirmButtonText: "Continuar"
+        });
+
+
+        // ====================================================
         // 4. NENHUMA VENDA
         // ====================================================
 
@@ -5507,16 +5715,13 @@ async function carregarMaisVendidos() {
             ranking.length === 0
         ) {
 
-            section.classList.add(
-                "hidden"
-            );
+            section.classList.add("hidden");
 
             console.log(
                 "ℹ️ Nenhuma venda encontrada."
             );
 
             return;
-
         }
 
 
@@ -5524,15 +5729,34 @@ async function carregarMaisVendidos() {
         // 5. BUSCAR PRODUTOS
         // ====================================================
 
+        Swal.fire({
+            title: "🛍️ Buscando produtos...",
+            html: "Consultando API de produtos...",
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
+
+        const productsURL =
+            "https://essenzaintimasapi.onrender.com/products";
+
+
         console.log(
-            "🛍️ Buscando produtos..."
+            "🌐 URL produtos:",
+            productsURL
         );
 
 
         const productsResponse =
-            await fetch(
-                `https://essenzaintimasapi.onrender.com/products`
-            );
+            await fetch(productsURL);
+
+
+        console.log(
+            "📡 Status produtos:",
+            productsResponse.status
+        );
 
 
         if (!productsResponse.ok) {
@@ -5548,6 +5772,12 @@ async function carregarMaisVendidos() {
             await productsResponse.json();
 
 
+        console.log(
+            "🛍️ RESPOSTA COMPLETA PRODUTOS:",
+            productsData
+        );
+
+
         const products =
             Array.isArray(productsData)
 
@@ -5561,9 +5791,13 @@ async function carregarMaisVendidos() {
                 );
 
 
-        if (
-            !Array.isArray(products)
-        ) {
+        console.log(
+            "🛍️ PRODUTOS NORMALIZADOS:",
+            products
+        );
+
+
+        if (!Array.isArray(products)) {
 
             throw new Error(
                 "A API de produtos não retornou um array."
@@ -5581,6 +5815,12 @@ async function carregarMaisVendidos() {
                 .map(
                     (rankingItem) => {
 
+                        console.log(
+                            "🔎 Procurando produto:",
+                            rankingItem.productId
+                        );
+
+
                         const product =
                             products.find(
                                 (p) =>
@@ -5594,13 +5834,18 @@ async function carregarMaisVendidos() {
                         if (!product) {
 
                             console.warn(
-                                "⚠️ Produto não encontrado:",
+                                "⚠️ Produto NÃO encontrado:",
                                 rankingItem.productId
                             );
 
                             return null;
-
                         }
+
+
+                        console.log(
+                            "✅ Produto encontrado:",
+                            product
+                        );
 
 
                         return {
@@ -5617,9 +5862,80 @@ async function carregarMaisVendidos() {
                 .filter(Boolean);
 
 
+        console.log(
+            "🎯 PRODUTOS FINAIS:",
+            topProducts
+        );
+
+
+        // ====================================================
+        // ALERTA — PRODUTOS ENCONTRADOS
+        // ====================================================
+
+        Swal.close();
+
+        await Swal.fire({
+
+            icon:
+                topProducts.length > 0
+                    ? "success"
+                    : "warning",
+
+            title: "🎯 Produtos encontrados",
+
+            html: `
+                <div style="text-align:left">
+
+                    <p>
+                        🏆 Ranking:
+                        <strong>${ranking.length}</strong>
+                    </p>
+
+                    <p>
+                        🛍️ Produtos encontrados:
+                        <strong>${topProducts.length}</strong>
+                    </p>
+
+                    <hr>
+
+                    ${
+                        topProducts.length
+                            ? topProducts.map(
+                                (product, index) => `
+                                    <p>
+                                        <strong>
+                                            ${index + 1}º
+                                        </strong>
+                                        ${product.name || "Sem nome"}
+                                        —
+                                        ${product.quantidadeVendida}
+                                        vendas
+                                    </p>
+                                `
+                              ).join("")
+                            : `
+                                <p>
+                                    ❌ Nenhum produto do ranking
+                                    foi encontrado na API.
+                                </p>
+                            `
+                    }
+
+                </div>
+            `,
+
+            confirmButtonText: "Renderizar"
+        });
+
+
         // ====================================================
         // 7. RENDERIZAR
         // ====================================================
+
+        console.log(
+            "🎨 Renderizando cards..."
+        );
+
 
         container.innerHTML =
             topProducts
@@ -5631,6 +5947,12 @@ async function carregarMaisVendidos() {
                         )
                 )
                 .join("");
+
+
+        console.log(
+            "🎨 HTML GERADO:",
+            container.innerHTML
+        );
 
 
         // ====================================================
@@ -5645,7 +5967,62 @@ async function carregarMaisVendidos() {
                 "hidden"
             );
 
+
+            console.log(
+                "👁️ Seção Mais Vendidos exibida."
+            );
+
+        } else {
+
+            section.classList.add(
+                "hidden"
+            );
+
         }
+
+
+        // ====================================================
+        // FINAL
+        // ====================================================
+
+        await Swal.fire({
+
+            icon: "success",
+
+            title: "✨ Mais Vendidos carregado!",
+
+            html: `
+                <div style="text-align:left">
+
+                    <p>
+                        🏆 Produtos exibidos:
+                        <strong>${topProducts.length}</strong>
+                    </p>
+
+                    <p>
+                        📦 Pedidos analisados:
+                        <strong>${pedidos.length}</strong>
+                    </p>
+
+                    <p>
+                        ✅ Pedidos entregues:
+                        <strong>${pedidosEntregues}</strong>
+                    </p>
+
+                    <hr>
+
+                    <p>
+                        Se os cards apareceram corretamente,
+                        o ranking está funcionando.
+                    </p>
+
+                </div>
+            `,
+
+            timer: 2500,
+            showConfirmButton: false
+
+        });
 
 
         console.log(
@@ -5656,9 +6033,65 @@ async function carregarMaisVendidos() {
     } catch (error) {
 
         console.error(
-            "❌ Erro ao carregar Mais Vendidos:",
+            "❌ ERRO COMPLETO:",
             error
         );
+
+
+        Swal.close();
+
+
+        // ====================================================
+        // ALERTA DE ERRO COMPLETO
+        // ====================================================
+
+        Swal.fire({
+
+            icon: "error",
+
+            title: "❌ Erro no Mais Vendidos",
+
+            html: `
+                <div style="text-align:left">
+
+                    <p>
+                        O carregamento dos Mais Vendidos
+                        encontrou um erro.
+                    </p>
+
+                    <hr>
+
+                    <p>
+                        <strong>Mensagem:</strong>
+                    </p>
+
+                    <pre style="
+                        white-space:pre-wrap;
+                        background:#f5f5f5;
+                        padding:10px;
+                        border-radius:8px;
+                        font-size:12px;
+                    ">${error.message}</pre>
+
+                    <p>
+                        <strong>Tipo:</strong>
+                        ${error.name || "Error"}
+                    </p>
+
+                    <hr>
+
+                    <p>
+                        🔎 Veja também o
+                        <strong>Console do navegador</strong>
+                        para o objeto completo.
+                    </p>
+
+                </div>
+            `,
+
+            confirmButtonText: "Fechar"
+
+        });
 
 
         // Não quebra o catálogo
