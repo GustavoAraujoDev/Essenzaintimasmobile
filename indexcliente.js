@@ -5344,8 +5344,8 @@ async function carregarMaisVendidos() {
     debugAlert(
         "🔵 CONFIGURAÇÃO API",
         "API_BASE_URL:\n" +
-        typeof API_BASE_URL !== "undefined"
-            ? API_BASE_URL
+        typeof API_URL !== "undefined"
+            ? API_URL
             : "API_BASE_URL NÃO EXISTE"
     );
 
