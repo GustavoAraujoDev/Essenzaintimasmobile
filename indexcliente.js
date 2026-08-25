@@ -4860,3 +4860,322 @@ menuToggle.addEventListener("click", abrirMenuMobile);
 closeMenu.addEventListener("click", fecharMenuMobile);
 
 menuOverlay.addEventListener("click", fecharMenuMobile);
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  const btnBuscar = document.getElementById("btn-buscar");
+  const searchBox = document.getElementById("search-box");
+  const inputBusca = document.getElementById("input-busca");
+  const btnFechar = document.getElementById("btn-fechar-busca");
+  const resultados = document.getElementById("resultados-busca");
+
+
+  // ============================================================
+  // ABRIR BUSCA
+  // ============================================================
+
+  btnBuscar.addEventListener("click", () => {
+
+    searchBox.classList.remove("hidden");
+
+    setTimeout(() => {
+      inputBusca.focus();
+    }, 100);
+
+  });
+
+
+  // ============================================================
+  // FECHAR BUSCA
+  // ============================================================
+
+  btnFechar.addEventListener("click", () => {
+
+    fecharBusca();
+
+  });
+
+
+  function fecharBusca() {
+
+    searchBox.classList.add("hidden");
+
+    inputBusca.value = "";
+
+    resultados.innerHTML = "";
+
+    resultados.classList.add("hidden");
+
+    removerDestaques();
+
+  }
+
+
+  // ============================================================
+  // PESQUISAR
+  // ============================================================
+
+  inputBusca.addEventListener("input", () => {
+
+    const termo = inputBusca.value.trim().toLowerCase();
+
+    removerDestaques();
+
+    if (!termo) {
+
+      resultados.innerHTML = "";
+
+      resultados.classList.add("hidden");
+
+      return;
+
+    }
+
+
+    const elementos = encontrarElementos(termo);
+
+    mostrarResultados(elementos, termo);
+
+  });
+
+
+  // ============================================================
+  // ENCONTRAR ELEMENTOS
+  // ============================================================
+
+  function encontrarElementos(termo) {
+
+    const elementos = document.querySelectorAll(
+      "h1, h2, h3, h4, h5, h6, p, span, a, button, li, label"
+    );
+
+    const encontrados = [];
+
+    elementos.forEach(elemento => {
+
+      const texto = elemento.textContent.trim();
+
+      if (!texto) return;
+
+      if (
+        texto.toLowerCase().includes(termo)
+      ) {
+
+        // Evita pegar elementos duplicados
+        // que estejam dentro de outro resultado
+        const jaEncontrado = encontrados.some(
+          item => item.contains(elemento)
+        );
+
+        if (!jaEncontrado) {
+
+          encontrados.push(elemento);
+
+        }
+
+      }
+
+    });
+
+    return encontrados.slice(0, 8);
+
+  }
+
+
+  // ============================================================
+  // MOSTRAR RESULTADOS
+  // ============================================================
+
+  function mostrarResultados(elementos, termo) {
+
+    resultados.innerHTML = "";
+
+    if (elementos.length === 0) {
+
+      resultados.innerHTML = `
+        <div class="px-3 py-4 text-center">
+
+          <div class="text-2xl mb-2">
+            🔎
+          </div>
+
+          <p class="text-sm text-gray-500">
+            Nenhum resultado encontrado
+          </p>
+
+          <p class="text-xs text-gray-400 mt-1">
+            Tente pesquisar outro termo
+          </p>
+
+        </div>
+      `;
+
+      resultados.classList.remove("hidden");
+
+      return;
+
+    }
+
+
+    elementos.forEach((elemento, index) => {
+
+      const item = document.createElement("button");
+
+      item.type = "button";
+
+      item.className = `
+        w-full text-left
+        px-3 py-3
+        rounded-xl
+        hover:bg-[#F8F3EF]
+        transition-colors
+        border-b border-[#F1E9E4]
+        last:border-0
+      `;
+
+
+      const textoOriginal = elemento.textContent.trim();
+
+      const texto =
+        textoOriginal.length > 70
+          ? textoOriginal.substring(0, 70) + "..."
+          : textoOriginal;
+
+
+      item.innerHTML = `
+        <div class="flex items-center gap-3">
+
+          <div class="
+            w-9 h-9
+            rounded-full
+            bg-[#F8F3EF]
+            flex items-center justify-center
+            shrink-0
+          ">
+
+            <svg
+              class="w-4 h-4 text-[#9E7960]"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+            >
+              <circle cx="11" cy="11" r="7"/>
+              <path d="m20 20-4-4" stroke-linecap="round"/>
+            </svg>
+
+          </div>
+
+          <div class="min-w-0">
+
+            <p class="text-sm font-medium text-[#26211E] truncate">
+              ${texto}
+            </p>
+
+            <p class="text-xs text-gray-400 mt-0.5">
+              Resultado ${index + 1}
+            </p>
+
+          </div>
+
+        </div>
+      `;
+
+
+      item.addEventListener("click", () => {
+
+        irParaElemento(elemento);
+
+      });
+
+
+      resultados.appendChild(item);
+
+    });
+
+
+    resultados.classList.remove("hidden");
+
+  }
+
+
+  // ============================================================
+  // IR ATÉ O ELEMENTO
+  // ============================================================
+
+  function irParaElemento(elemento) {
+
+    searchBox.classList.add("hidden");
+
+    resultados.classList.add("hidden");
+
+    inputBusca.blur();
+
+
+    elemento.scrollIntoView({
+      behavior: "smooth",
+      block: "center"
+    });
+
+
+    elemento.classList.add("resultado-busca");
+
+
+    setTimeout(() => {
+
+      elemento.classList.remove("resultado-busca");
+
+    }, 2500);
+
+  }
+
+
+  // ============================================================
+  // REMOVER DESTAQUES
+  // ============================================================
+
+  function removerDestaques() {
+
+    document
+      .querySelectorAll(".resultado-busca")
+      .forEach(elemento => {
+
+        elemento.classList.remove("resultado-busca");
+
+      });
+
+  }
+
+
+  // ============================================================
+  // ESC - FECHAR
+  // ============================================================
+
+  document.addEventListener("keydown", (event) => {
+
+    if (event.key === "Escape") {
+
+      fecharBusca();
+
+    }
+
+  });
+
+
+  // ============================================================
+  // CLIQUE FORA - FECHAR
+  // ============================================================
+
+  document.addEventListener("click", (event) => {
+
+    if (
+      !searchBox.contains(event.target) &&
+      !btnBuscar.contains(event.target)
+    ) {
+
+      fecharBusca();
+
+    }
+
+  });
+
+});
