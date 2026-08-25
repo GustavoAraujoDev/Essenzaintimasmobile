@@ -2,7 +2,7 @@
 // CONFIGURAÇÕES GERAIS
 // ============================================================
 
-const API_URL = "https://prafoodapi.onrender.com/products";
+const API_URL = "https://essenzaintimasapi.onrender.com/products";
 
 let isLogin = true;
 let cart = JSON.parse(
@@ -3783,7 +3783,7 @@ ${itensTexto}
 ⏰ ${agora.toLocaleString("pt-BR")}
 `;
 
-  const foneLoja = "5585991146489";
+  const foneLoja = "5588999935987";
   const url = `https://api.whatsapp.com/send?phone=${foneLoja}&text=${encodeURIComponent(textoZap)}`;
 
   window.open(url, "_blank");
@@ -3796,7 +3796,7 @@ async function criarPedidoNoSistema(pedidoFinal) {
     allowOutsideClick: false,
   });
 
-  const res = await fetch(`https://prafoodapi.onrender.com/pedidos`, {
+  const res = await fetch(`https://essenzaintimasapi.onrender.com/pedidos`, {
     // Usando a constante de ambiente que definimos antes
     method: "POST",
     credentials: "include",
@@ -3846,7 +3846,7 @@ async function fetchOrdersByPhone() {
 
   try {
     const response = await fetch(
-      `https://prafoodapi.onrender.com/pedidos/telefone/${phone}`,
+      `https://essenzaintimasapi.onrender.com/pedidos/telefone/${phone}`,
       {
         method: "GET",
         credentials: "include",
@@ -3875,7 +3875,7 @@ function renderOrders(orders) {
   }
 
   // Número da loja (substitua pelo número real ou pegue da API se disponível)
-  const storePhone = "5585991924340";
+  const storePhone = "5588999935987";
 
   container.innerHTML = orders
     .map((order) => {
@@ -4168,7 +4168,7 @@ function validarTaxaSegura(valor) {
 
 // Armazena os bairros globalmente após puxar da API, mantendo a compatibilidade com a sua lógica de input
 let listaBairrosDisponiveis = [];
-const API_URLTAXAS = "https://prafoodapi.onrender.com/taxas"; // Sua URL corrigida do back-end
+const API_URLTAXAS = "https://essenzaintimasapi.onrender.com/taxas"; // Sua URL corrigida do back-end
 
 async function inicializarBairros() {
   const selectBairro = document.getElementById("address-neighborhood");
@@ -4389,7 +4389,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // ==========================================
 // GLOBAIS DE CONTROLE DO CUPOM
 // ==========================================
-const API_BASE_COUPONS = "https://prafoodapi.onrender.com/cupom"; // Ajuste se necessário
+const API_BASE_COUPONS = "https://essenzaintimasapi.onrender.com/cupom"; // Ajuste se necessário
 let appliedCouponCode = null;
 let computedDiscount = 0;
 
