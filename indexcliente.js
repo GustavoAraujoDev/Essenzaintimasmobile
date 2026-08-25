@@ -3826,7 +3826,11 @@ function enviarParaWhatsApp(pedido, itensDoCarrinho) {
       : "";
 
   const textoZap = `
-📌 *PEDIDO #${pedido.id || "NOVO"}*
+✨ *ESSENZA ÍNTIMAS*
+
+━━━━━━━━━━━━━━━━━━━━
+
+🛍️ *PEDIDO #${pedido.id || "NOVO"}*
 ------------------------------------------------
 👤 *CLIENTE:* ${pedido.cliente.nome}
 📞 *FONE:* ${pedido.cliente.telefone}
@@ -3843,6 +3847,11 @@ ${itensTexto}
 💳 *PAGAMENTO:* ${metodoPagamento}${blocoTroco}
 ------------------------------------------------
 ⏰ ${agora.toLocaleString("pt-BR")}
+
+
+━━━━━━━━━━━━━━━━━━━━
+
+💝 Obrigada por escolher a Essenza Íntimas!
 `;
 
   const foneLoja = "5588999935987";
