@@ -762,6 +762,35 @@ function switchTab(tab) {
   localStorage.setItem("lastTab", tab);
 }
 
+// ============================================================
+// IR PARA FAQ — DÚVIDAS FREQUENTES
+// ============================================================
+
+function goToFAQ() {
+
+  // Garante que a Home esteja visível
+  switchTab("menu");
+
+  // Aguarda o DOM atualizar a visibilidade
+  requestAnimationFrame(() => {
+
+    const faqSection = document.getElementById("faq-section");
+
+    if (!faqSection) {
+      console.warn("⚠️ Seção FAQ não encontrada.");
+      return;
+    }
+
+    // Scroll suave até o FAQ
+    faqSection.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+
+  });
+
+}
+
 
 
 // ============================================================
