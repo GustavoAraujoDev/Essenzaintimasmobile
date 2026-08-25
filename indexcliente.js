@@ -460,6 +460,14 @@ document.addEventListener(
         // ====================================================
 
         await carregarProdutos();
+// ====================================================
+
+        // CARREGAR MAIS VENDIDOS
+
+        // ====================================================
+
+        await carregarMaisVendidos();
+      
 
     }
 );
@@ -5250,3 +5258,414 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
 });
+
+// ============================================================
+// ✨ MAIS VENDIDOS — ESSENZA ÍNTIMAS
+// ============================================================
+
+async function carregarMaisVendidos() {
+
+    console.log(
+        "✨ Iniciando carregamento dos Mais Vendidos..."
+    );
+
+
+    // ========================================================
+    // ELEMENTOS
+    // ========================================================
+
+    const section =
+        document.getElementById(
+            "mais-vendidos-section"
+        );
+
+    const container =
+        document.getElementById(
+            "mais-vendidos-container"
+        );
+
+
+    if (!section || !container) {
+
+        console.warn(
+            "⚠️ Seção Mais Vendidos não encontrada."
+        );
+
+        return;
+    }
+
+
+    try {
+
+        // ====================================================
+        // 1. BUSCAR PEDIDOS
+        // ====================================================
+
+        console.log(
+            "📦 Buscando pedidos..."
+        );
+
+
+        const pedidosResponse =
+            await fetch(
+                `https://essenzaintimasapi.onrender.com/pedidos`
+            );
+
+
+        if (!pedidosResponse.ok) {
+
+            throw new Error(
+                `Erro HTTP ao buscar pedidos: ${pedidosResponse.status}`
+            );
+
+        }
+
+
+        const pedidosData =
+            await pedidosResponse.json();
+
+
+        // ====================================================
+        // NORMALIZAR RESPOSTA
+        // ====================================================
+
+        const pedidos =
+            Array.isArray(pedidosData)
+
+                ? pedidosData
+
+                : (
+                    pedidosData.pedidos ||
+                    pedidosData.data ||
+                    pedidosData.results ||
+                    []
+                );
+
+
+        if (!Array.isArray(pedidos)) {
+
+            throw new Error(
+                "A API de pedidos não retornou um array."
+            );
+
+        }
+
+
+        console.log(
+            `📦 ${pedidos.length} pedidos encontrados.`
+        );
+
+
+        // ====================================================
+        // 2. SOMAR VENDAS
+        // ====================================================
+
+        const vendasPorProduto = {};
+
+
+        pedidos.forEach(
+            (pedido) => {
+
+                // ============================================
+                // STATUS
+                // ============================================
+
+                const status =
+                    String(
+                        pedido.status ||
+                        pedido.entrega?.status ||
+                        ""
+                    ).toUpperCase();
+
+
+                // ============================================
+                // SOMENTE ENTREGUES
+                // ============================================
+
+                if (
+                    status !== "DELIVERED"
+                ) {
+
+                    return;
+
+                }
+
+
+                // ============================================
+                // ITENS
+                // ============================================
+
+                if (
+                    !Array.isArray(
+                        pedido.itens
+                    )
+                ) {
+
+                    return;
+
+                }
+
+
+                pedido.itens.forEach(
+                    (item) => {
+
+                        const productId =
+                            item.productId;
+
+
+                        if (!productId) {
+
+                            return;
+
+                        }
+
+
+                        const quantidade =
+                            Number(
+                                item.quantity || 0
+                            );
+
+
+                        if (
+                            quantidade <= 0
+                        ) {
+
+                            return;
+
+                        }
+
+
+                        // ====================================
+                        // PRIMEIRA VENDA
+                        // ====================================
+
+                        if (
+                            !vendasPorProduto[
+                                productId
+                            ]
+                        ) {
+
+                            vendasPorProduto[
+                                productId
+                            ] = {
+
+                                productId,
+
+                                name:
+                                    item.name ||
+                                    "Produto",
+
+                                quantity: 0
+
+                            };
+
+                        }
+
+
+                        // ====================================
+                        // SOMAR
+                        // ====================================
+
+                        vendasPorProduto[
+                            productId
+                        ].quantity += quantidade;
+
+                    }
+                );
+
+            }
+        );
+
+
+        // ====================================================
+        // 3. ORDENAR
+        // ====================================================
+
+        const ranking =
+            Object.values(
+                vendasPorProduto
+            )
+            .sort(
+                (a, b) =>
+                    b.quantity -
+                    a.quantity
+            )
+            .slice(0, 3);
+
+
+        console.log(
+            "🏆 TOP 3:",
+            ranking
+        );
+
+
+        // ====================================================
+        // 4. NENHUMA VENDA
+        // ====================================================
+
+        if (
+            ranking.length === 0
+        ) {
+
+            section.classList.add(
+                "hidden"
+            );
+
+            console.log(
+                "ℹ️ Nenhuma venda encontrada."
+            );
+
+            return;
+
+        }
+
+
+        // ====================================================
+        // 5. BUSCAR PRODUTOS
+        // ====================================================
+
+        console.log(
+            "🛍️ Buscando produtos..."
+        );
+
+
+        const productsResponse =
+            await fetch(
+                `https://essenzaintimasapi.onrender.com/products`
+            );
+
+
+        if (!productsResponse.ok) {
+
+            throw new Error(
+                `Erro HTTP ao buscar produtos: ${productsResponse.status}`
+            );
+
+        }
+
+
+        const productsData =
+            await productsResponse.json();
+
+
+        const products =
+            Array.isArray(productsData)
+
+                ? productsData
+
+                : (
+                    productsData.products ||
+                    productsData.produtos ||
+                    productsData.data ||
+                    []
+                );
+
+
+        if (
+            !Array.isArray(products)
+        ) {
+
+            throw new Error(
+                "A API de produtos não retornou um array."
+            );
+
+        }
+
+
+        // ====================================================
+        // 6. ENCONTRAR PRODUTOS
+        // ====================================================
+
+        const topProducts =
+            ranking
+                .map(
+                    (rankingItem) => {
+
+                        const product =
+                            products.find(
+                                (p) =>
+                                    String(p.id) ===
+                                    String(
+                                        rankingItem.productId
+                                    )
+                            );
+
+
+                        if (!product) {
+
+                            console.warn(
+                                "⚠️ Produto não encontrado:",
+                                rankingItem.productId
+                            );
+
+                            return null;
+
+                        }
+
+
+                        return {
+
+                            ...product,
+
+                            quantidadeVendida:
+                                rankingItem.quantity
+
+                        };
+
+                    }
+                )
+                .filter(Boolean);
+
+
+        // ====================================================
+        // 7. RENDERIZAR
+        // ====================================================
+
+        container.innerHTML =
+            topProducts
+                .map(
+                    (product, index) =>
+                        renderMaisVendidoCard(
+                            product,
+                            index
+                        )
+                )
+                .join("");
+
+
+        // ====================================================
+        // 8. MOSTRAR
+        // ====================================================
+
+        if (
+            topProducts.length > 0
+        ) {
+
+            section.classList.remove(
+                "hidden"
+            );
+
+        }
+
+
+        console.log(
+            `✅ ${topProducts.length} produtos no ranking.`
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "❌ Erro ao carregar Mais Vendidos:",
+            error
+        );
+
+
+        // Não quebra o catálogo
+        section.classList.add(
+            "hidden"
+        );
+
+    }
+
+}
