@@ -5261,14 +5261,40 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // ============================================================
 // ✨ MAIS VENDIDOS — ESSENZA ÍNTIMAS
+// 🔎 DEBUG COMPLETO
 // ============================================================
 
 async function carregarMaisVendidos() {
+
+    // ========================================================
+    // FUNÇÃO DE ALERTA
+    // ========================================================
+
+    function debugAlert(titulo, mensagem) {
+
+        alert(
+            titulo +
+            "\n\n" +
+            mensagem
+        );
+
+    }
+
+
+    debugAlert(
+        "🔵 MAIS VENDIDOS — INÍCIO",
+        "A função carregarMaisVendidos() foi iniciada."
+    );
+
 
     console.log(
         "✨ Iniciando carregamento dos Mais Vendidos..."
     );
 
+
+    // ========================================================
+    // ELEMENTOS
+    // ========================================================
 
     const section =
         document.getElementById(
@@ -5281,10 +5307,11 @@ async function carregarMaisVendidos() {
         );
 
 
-    if (!section || !container) {
+    if (!section) {
 
-        console.warn(
-            "⚠️ Elementos dos Mais Vendidos não encontrados."
+        debugAlert(
+            "🔴 ERRO",
+            "Elemento #mais-vendidos-section NÃO foi encontrado."
         );
 
         return;
@@ -5292,34 +5319,98 @@ async function carregarMaisVendidos() {
     }
 
 
+    if (!container) {
+
+        debugAlert(
+            "🔴 ERRO",
+            "Elemento #mais-vendidos-container NÃO foi encontrado."
+        );
+
+        return;
+
+    }
+
+
+    debugAlert(
+        "🟢 ELEMENTOS OK",
+        "Section e container dos Mais Vendidos encontrados."
+    );
+
+
     // ========================================================
-    // ESCONDE ENQUANTO CARREGA
+    // CONFIGURAÇÃO DA API
     // ========================================================
 
-    section.classList.add("hidden");
+    debugAlert(
+        "🔵 CONFIGURAÇÃO API",
+        "API_BASE_URL:\n" +
+        typeof API_BASE_URL !== "undefined"
+            ? API_BASE_URL
+            : "API_BASE_URL NÃO EXISTE"
+    );
+
+
+    debugAlert(
+        "🔵 CONFIGURAÇÃO API",
+        "API_URL:\n" +
+        typeof API_URL !== "undefined"
+            ? API_URL
+            : "API_URL NÃO EXISTE"
+    );
 
 
     try {
 
         // ====================================================
-        // 1. BUSCAR PEDIDOS
+        // ESCONDER ENQUANTO CARREGA
         // ====================================================
 
+        section.classList.add(
+            "hidden"
+        );
+
+
+        // ====================================================
+        // 1. PEDIDOS
+        // ====================================================
+
+        const pedidosUrl =
+            `https://essenzaintimasapi.onrender.com/pedidos`;
+
+
+        debugAlert(
+            "🔵 ETAPA 1 — PEDIDOS",
+            "Tentando acessar:\n\n" +
+            pedidosUrl
+        );
+
+
         console.log(
-            "📦 Buscando pedidos..."
+            "📦 URL PEDIDOS:",
+            pedidosUrl
         );
 
 
         const pedidosResponse =
             await fetch(
-                `${API_BASE_URL}/pedidos`
+                pedidosUrl
             );
+
+
+        debugAlert(
+            "🟢 RESPOSTA PEDIDOS",
+            "HTTP Status:\n" +
+            pedidosResponse.status +
+            "\n\nOK:\n" +
+            pedidosResponse.ok
+        );
 
 
         if (!pedidosResponse.ok) {
 
             throw new Error(
-                `Erro ao buscar pedidos: HTTP ${pedidosResponse.status}`
+                "HTTP " +
+                pedidosResponse.status
             );
 
         }
@@ -5328,6 +5419,34 @@ async function carregarMaisVendidos() {
         const pedidosData =
             await pedidosResponse.json();
 
+
+        debugAlert(
+            "🟢 JSON PEDIDOS",
+            "Resposta recebida.\n\n" +
+            "Tipo: " +
+            typeof pedidosData +
+            "\n\n" +
+            "Array: " +
+            Array.isArray(pedidosData) +
+            "\n\n" +
+            "Quantidade: " +
+            (
+                Array.isArray(pedidosData)
+                    ? pedidosData.length
+                    : "Não é array"
+            )
+        );
+
+
+        console.log(
+            "📦 PEDIDOS:",
+            pedidosData
+        );
+
+
+        // ====================================================
+        // NORMALIZAR
+        // ====================================================
 
         const pedidos =
             Array.isArray(pedidosData)
@@ -5345,29 +5464,43 @@ async function carregarMaisVendidos() {
         if (!Array.isArray(pedidos)) {
 
             throw new Error(
-                "A API de pedidos não retornou um array."
+                "A API de pedidos não retornou array."
             );
 
         }
 
 
-        console.log(
-            `📦 ${pedidos.length} pedidos encontrados.`
+        debugAlert(
+            "🟢 PEDIDOS NORMALIZADOS",
+            "Total de pedidos:\n\n" +
+            pedidos.length
         );
 
 
         // ====================================================
-        // 2. SOMAR QUANTIDADE VENDIDA
+        // 2. ANALISAR PEDIDOS
         // ====================================================
+
+        let pedidosDelivered = 0;
+
+        let itensEncontrados = 0;
+
+        let produtosEncontrados = 0;
 
         const vendasPorProduto = {};
 
 
         pedidos.forEach(
-            (pedido) => {
+            (pedido, pedidoIndex) => {
+
+                console.log(
+                    "📦 PEDIDO:",
+                    pedido
+                );
+
 
                 // ============================================
-                // STATUS DO PEDIDO
+                // STATUS
                 // ============================================
 
                 const status =
@@ -5378,9 +5511,11 @@ async function carregarMaisVendidos() {
                     ).toUpperCase();
 
 
-                // ============================================
-                // SOMENTE DELIVERED
-                // ============================================
+                console.log(
+                    `Pedido ${pedidoIndex + 1}:`,
+                    status
+                );
+
 
                 if (
                     status !== "DELIVERED"
@@ -5389,6 +5524,9 @@ async function carregarMaisVendidos() {
                     return;
 
                 }
+
+
+                pedidosDelivered++;
 
 
                 // ============================================
@@ -5401,6 +5539,11 @@ async function carregarMaisVendidos() {
                     )
                 ) {
 
+                    console.warn(
+                        "⚠️ Pedido sem itens:",
+                        pedido
+                    );
+
                     return;
 
                 }
@@ -5408,6 +5551,15 @@ async function carregarMaisVendidos() {
 
                 pedido.itens.forEach(
                     (item) => {
+
+                        itensEncontrados++;
+
+
+                        console.log(
+                            "🛍️ ITEM:",
+                            item
+                        );
+
 
                         const productId =
                             item.productId;
@@ -5418,6 +5570,9 @@ async function carregarMaisVendidos() {
                             return;
 
                         }
+
+
+                        produtosEncontrados++;
 
 
                         const quantidade =
@@ -5434,10 +5589,6 @@ async function carregarMaisVendidos() {
 
                         }
 
-
-                        // ====================================
-                        // CRIA REGISTRO
-                        // ====================================
 
                         if (
                             !vendasPorProduto[
@@ -5463,10 +5614,6 @@ async function carregarMaisVendidos() {
                         }
 
 
-                        // ====================================
-                        // SOMA
-                        // ====================================
-
                         vendasPorProduto[
                             productId
                         ].quantity += quantidade;
@@ -5479,7 +5626,38 @@ async function carregarMaisVendidos() {
 
 
         // ====================================================
-        // 3. ORDENAR
+        // DEBUG DAS VENDAS
+        // ====================================================
+
+        debugAlert(
+            "🟢 ETAPA 2 — VENDAS",
+            "Pedidos analisados: " +
+            pedidos.length +
+
+            "\n\nPedidos DELIVERED: " +
+            pedidosDelivered +
+
+            "\n\nItens encontrados: " +
+            itensEncontrados +
+
+            "\n\nItens com productId: " +
+            produtosEncontrados +
+
+            "\n\nProdutos diferentes vendidos: " +
+            Object.keys(
+                vendasPorProduto
+            ).length
+        );
+
+
+        console.log(
+            "📊 VENDAS:",
+            vendasPorProduto
+        );
+
+
+        // ====================================================
+        // 3. RANKING
         // ====================================================
 
         const ranking =
@@ -5495,21 +5673,37 @@ async function carregarMaisVendidos() {
 
 
         console.log(
-            "🏆 Ranking calculado:",
+            "🏆 RANKING:",
             ranking
         );
 
 
-        // ====================================================
-        // 4. NENHUMA VENDA
-        // ====================================================
+        debugAlert(
+            "🏆 ETAPA 3 — TOP 3",
+            ranking.length === 0
+
+                ? "NENHUM produto entrou no ranking."
+
+                : ranking
+                    .map(
+                        (item, index) =>
+                            `${index + 1}º — ${item.name} — ${item.quantity} unidades`
+                    )
+                    .join("\n\n")
+        );
+
 
         if (
             ranking.length === 0
         ) {
 
-            console.log(
-                "ℹ️ Nenhum produto vendido encontrado."
+            debugAlert(
+                "🟡 SEM RANKING",
+                "Nenhum produto vendido foi encontrado em pedidos DELIVERED.\n\nA seção será escondida."
+            );
+
+            section.classList.add(
+                "hidden"
             );
 
             return;
@@ -5518,11 +5712,13 @@ async function carregarMaisVendidos() {
 
 
         // ====================================================
-        // 5. BUSCAR PRODUTOS
+        // 4. PRODUTOS
         // ====================================================
 
-        console.log(
-            "🛍️ Buscando produtos..."
+        debugAlert(
+            "🔵 ETAPA 4 — PRODUTOS",
+            "Buscando produtos em:\n\n" +
+            API_URL
         );
 
 
@@ -5532,10 +5728,21 @@ async function carregarMaisVendidos() {
             );
 
 
+        debugAlert(
+            "🟢 RESPOSTA PRODUTOS",
+            "HTTP Status:\n" +
+            productsResponse.status +
+
+            "\n\nOK:\n" +
+            productsResponse.ok
+        );
+
+
         if (!productsResponse.ok) {
 
             throw new Error(
-                `Erro ao buscar produtos: HTTP ${productsResponse.status}`
+                "Erro HTTP produtos: " +
+                productsResponse.status
             );
 
         }
@@ -5543,6 +5750,12 @@ async function carregarMaisVendidos() {
 
         const productsData =
             await productsResponse.json();
+
+
+        console.log(
+            "🛍️ PRODUTOS API:",
+            productsData
+        );
 
 
         const products =
@@ -5558,18 +5771,33 @@ async function carregarMaisVendidos() {
                 );
 
 
-        if (!Array.isArray(products)) {
+        debugAlert(
+            "🟢 PRODUTOS RECEBIDOS",
+            "Total de produtos:\n\n" +
+            products.length
+        );
+
+
+        if (
+            !Array.isArray(products)
+        ) {
 
             throw new Error(
-                "A API de produtos não retornou um array."
+                "Produtos não são um array."
             );
 
         }
 
 
         // ====================================================
-        // 6. CRUZAR RANKING COM PRODUTOS
+        // 5. CRUZAR IDs
         // ====================================================
+
+        debugAlert(
+            "🔵 ETAPA 5 — CRUZAMENTO",
+            "Comparando productId dos pedidos com id dos produtos."
+        );
+
 
         const topProducts =
             ranking
@@ -5591,7 +5819,7 @@ async function carregarMaisVendidos() {
                         if (!produto) {
 
                             console.warn(
-                                "⚠️ Produto não encontrado na API:",
+                                "⚠️ Produto não encontrado:",
                                 venda.productId
                             );
 
@@ -5614,31 +5842,53 @@ async function carregarMaisVendidos() {
                 .filter(Boolean);
 
 
+        debugAlert(
+            "🟢 CRUZAMENTO FINALIZADO",
+            "Produtos encontrados para o ranking:\n\n" +
+            topProducts.length +
+
+            "\n\n" +
+
+            (
+                topProducts.length > 0
+
+                    ? topProducts
+                        .map(
+                            (p, i) =>
+                                `${i + 1}º ${p.name} — ${p.quantidadeVendida} vendidos`
+                        )
+                        .join("\n")
+
+                    : "NENHUM"
+            )
+        );
+
+
         if (
             topProducts.length === 0
         ) {
 
-            console.warn(
-                "⚠️ Nenhum produto do ranking foi encontrado na API."
+            throw new Error(
+                "O ranking existe, mas nenhum productId dos pedidos foi encontrado na API /products."
             );
-
-            return;
 
         }
 
 
         // ====================================================
-        // 7. GERAR OS MESMOS CARDS DO CATÁLOGO
+        // 6. RENDERIZAR
         // ====================================================
+
+        debugAlert(
+            "🔵 ETAPA 6 — RENDERIZAÇÃO",
+            "Começando a montar os cards."
+        );
+
 
         container.innerHTML =
             topProducts
                 .map(
                     (product, index) => {
-
-                        // ====================================
-                        // SKU
-                        // ====================================
 
                         const primeiroSku =
                             Array.isArray(
@@ -5650,10 +5900,6 @@ async function carregarMaisVendidos() {
 
                                 : null;
 
-
-                        // ====================================
-                        // PREÇO
-                        // ====================================
 
                         const preco =
                             primeiroSku
@@ -5677,10 +5923,6 @@ async function carregarMaisVendidos() {
                             );
 
 
-                        // ====================================
-                        // IMAGEM
-                        // ====================================
-
                         const imageUrl =
                             Array.isArray(
                                 product.images
@@ -5692,10 +5934,6 @@ async function carregarMaisVendidos() {
                                 : "";
 
 
-                        // ====================================
-                        // PRODUTO
-                        // ====================================
-
                         const productEncoded =
                             encodeURIComponent(
                                 JSON.stringify(
@@ -5703,10 +5941,6 @@ async function carregarMaisVendidos() {
                                 )
                             );
 
-
-                        // ====================================
-                        // POSIÇÃO
-                        // ====================================
 
                         const posicao =
                             index + 1;
@@ -5719,10 +5953,6 @@ async function carregarMaisVendidos() {
                                     ? "🥈"
                                     : "🥉";
 
-
-                        // ====================================
-                        // CARD
-                        // ====================================
 
                         return `
 
@@ -5754,10 +5984,6 @@ async function carregarMaisVendidos() {
                                 )"
 
                             >
-
-                                <!-- ============================ -->
-                                <!-- POSIÇÃO -->
-                                <!-- ============================ -->
 
                                 <div
                                     class="
@@ -5802,10 +6028,6 @@ async function carregarMaisVendidos() {
                                 </div>
 
 
-                                <!-- ============================ -->
-                                <!-- IMAGEM -->
-                                <!-- ============================ -->
-
                                 <div
                                     class="
                                         relative
@@ -5839,51 +6061,7 @@ async function carregarMaisVendidos() {
 
                                                     loading="lazy"
 
-                                                    onerror="
-                                                        this.style.display='none';
-                                                        this.nextElementSibling.classList.remove('hidden');
-                                                    "
-
                                                 />
-
-                                                <div
-                                                    class="
-                                                        hidden
-                                                        absolute
-                                                        inset-0
-                                                        flex
-                                                        flex-col
-                                                        items-center
-                                                        justify-center
-                                                        text-[#8C7A6B]/50
-                                                        p-4
-                                                        text-center
-                                                    "
-                                                >
-
-                                                    <i
-                                                        class="
-                                                            fas
-                                                            fa-gem
-                                                            text-2xl
-                                                            mb-1
-                                                        "
-                                                    ></i>
-
-                                                    <span
-                                                        class="
-                                                            text-[10px]
-                                                            font-medium
-                                                            tracking-wider
-                                                            uppercase
-                                                        "
-                                                    >
-
-                                                        Imagem indisponível
-
-                                                    </span>
-
-                                                </div>
 
                                             `
 
@@ -5931,10 +6109,6 @@ async function carregarMaisVendidos() {
                                     }
 
 
-                                    <!-- ======================== -->
-                                    <!-- ÍCONE -->
-                                    <!-- ======================== -->
-
                                     <div
                                         class="
                                             absolute
@@ -5972,10 +6146,6 @@ async function carregarMaisVendidos() {
 
                                 </div>
 
-
-                                <!-- ============================ -->
-                                <!-- DETALHES -->
-                                <!-- ============================ -->
 
                                 <div
                                     class="
@@ -6036,10 +6206,6 @@ async function carregarMaisVendidos() {
                                     </div>
 
 
-                                    <!-- ======================== -->
-                                    <!-- PREÇO -->
-                                    <!-- ======================== -->
-
                                     <div
                                         class="
                                             mt-3
@@ -6096,7 +6262,22 @@ async function carregarMaisVendidos() {
 
 
         // ====================================================
-        // 8. MOSTRAR SEÇÃO
+        // VERIFICAR HTML
+        // ====================================================
+
+        debugAlert(
+            "🟢 HTML GERADO",
+            "Cards gerados:\n\n" +
+            topProducts.length +
+
+            "\n\nHTML no container:\n" +
+            container.innerHTML.length +
+            " caracteres."
+        );
+
+
+        // ====================================================
+        // MOSTRAR
         // ====================================================
 
         section.classList.remove(
@@ -6104,25 +6285,41 @@ async function carregarMaisVendidos() {
         );
 
 
-        console.log(
-            "🏆 Mais Vendidos renderizado com sucesso."
+        debugAlert(
+            "🎉 SUCESSO",
+            "Mais Vendidos carregado corretamente!\n\n" +
+            "Produtos exibidos: " +
+            topProducts.length
         );
 
 
     } catch (error) {
 
+        // ====================================================
+        // ERRO
+        // ====================================================
+
         console.error(
-            "❌ Erro no Mais Vendidos:",
+            "❌ ERRO COMPLETO MAIS VENDIDOS:",
             error
         );
 
 
-        // ====================================================
-        // ESCONDER SEÇÃO EM CASO DE ERRO
-        // ====================================================
-
         section.classList.add(
             "hidden"
+        );
+
+
+        debugAlert(
+            "🔴 ERRO NO MAIS VENDIDOS",
+            "O carregamento dos Mais Vendidos encontrou um erro.\n\n" +
+            "Mensagem:\n" +
+            error.message +
+
+            "\n\nTipo:\n" +
+            error.name +
+
+            "\n\nVeja também o Console do navegador para o objeto completo."
         );
 
     }
