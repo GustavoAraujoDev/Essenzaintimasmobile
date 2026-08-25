@@ -5265,74 +5265,38 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function carregarMaisVendidos() {
 
-    console.log("✨ Iniciando carregamento dos Mais Vendidos...");
+    console.log(
+        "✨ Iniciando carregamento dos Mais Vendidos..."
+    );
 
-    // ========================================================
-    // ALERTA INICIAL
-    // ========================================================
-
-    Swal.fire({
-        title: "🔍 Debug Mais Vendidos",
-        html: `
-            <div style="text-align:left">
-                <p>🚀 Iniciando carregamento...</p>
-                <p>⏳ Aguarde...</p>
-            </div>
-        `,
-        allowOutsideClick: false,
-        didOpen: () => {
-            Swal.showLoading();
-        }
-    });
-
-
-    // ========================================================
-    // ELEMENTOS
-    // ========================================================
 
     const section =
-        document.getElementById("mais-vendidos-section");
+        document.getElementById(
+            "mais-vendidos-section"
+        );
 
     const container =
-        document.getElementById("mais-vendidos-container");
+        document.getElementById(
+            "mais-vendidos-container"
+        );
 
 
     if (!section || !container) {
 
-        console.error("❌ Elementos não encontrados.");
-
-        Swal.close();
-
-        Swal.fire({
-            icon: "error",
-            title: "Erro no HTML",
-            html: `
-                <div style="text-align:left">
-                    <p>❌ A seção ou container não foi encontrado.</p>
-
-                    <hr>
-
-                    <p><b>Section:</b>
-                        ${section ? "✅ Encontrada" : "❌ Não encontrada"}
-                    </p>
-
-                    <p><b>Container:</b>
-                        ${container ? "✅ Encontrado" : "❌ Não encontrado"}
-                    </p>
-
-                    <hr>
-
-                    <code>
-                        #mais-vendidos-section
-                        <br>
-                        #mais-vendidos-container
-                    </code>
-                </div>
-            `
-        });
+        console.warn(
+            "⚠️ Elementos dos Mais Vendidos não encontrados."
+        );
 
         return;
+
     }
+
+
+    // ========================================================
+    // ESCONDE ENQUANTO CARREGA
+    // ========================================================
+
+    section.classList.add("hidden");
 
 
     try {
@@ -5341,29 +5305,21 @@ async function carregarMaisVendidos() {
         // 1. BUSCAR PEDIDOS
         // ====================================================
 
-        console.log("📦 Buscando pedidos...");
-
-        const pedidosURL =
-            "https://essenzaintimasapi.onrender.com/pedidos";
-
-
-        console.log("🌐 URL pedidos:", pedidosURL);
+        console.log(
+            "📦 Buscando pedidos..."
+        );
 
 
         const pedidosResponse =
-            await fetch(pedidosURL);
-
-
-        console.log(
-            "📡 Status pedidos:",
-            pedidosResponse.status
-        );
+            await fetch(
+                `${API_BASE_URL}/pedidos`
+            );
 
 
         if (!pedidosResponse.ok) {
 
             throw new Error(
-                `Erro HTTP ao buscar pedidos: ${pedidosResponse.status}`
+                `Erro ao buscar pedidos: HTTP ${pedidosResponse.status}`
             );
 
         }
@@ -5372,16 +5328,6 @@ async function carregarMaisVendidos() {
         const pedidosData =
             await pedidosResponse.json();
 
-
-        console.log(
-            "📦 RESPOSTA COMPLETA PEDIDOS:",
-            pedidosData
-        );
-
-
-        // ====================================================
-        // NORMALIZAR RESPOSTA
-        // ====================================================
 
         const pedidos =
             Array.isArray(pedidosData)
@@ -5396,12 +5342,6 @@ async function carregarMaisVendidos() {
                 );
 
 
-        console.log(
-            "📦 PEDIDOS NORMALIZADOS:",
-            pedidos
-        );
-
-
         if (!Array.isArray(pedidos)) {
 
             throw new Error(
@@ -5411,65 +5351,23 @@ async function carregarMaisVendidos() {
         }
 
 
-        // ====================================================
-        // ALERTA — PEDIDOS
-        // ====================================================
-
-        Swal.close();
-
-        await Swal.fire({
-            icon: "info",
-            title: "📦 Pedidos encontrados",
-            html: `
-                <div style="text-align:left">
-
-                    <p>
-                        Foram encontrados
-                        <strong>${pedidos.length}</strong>
-                        pedidos.
-                    </p>
-
-                    <hr>
-
-                    <p>
-                        🌐 Status HTTP:
-                        <strong>${pedidosResponse.status}</strong>
-                    </p>
-
-                    <p>
-                        📊 Tipo:
-                        <strong>${Array.isArray(pedidos) ? "Array" : typeof pedidos}</strong>
-                    </p>
-
-                </div>
-            `,
-            timer: 1800,
-            showConfirmButton: false
-        });
+        console.log(
+            `📦 ${pedidos.length} pedidos encontrados.`
+        );
 
 
         // ====================================================
-        // 2. SOMAR VENDAS
+        // 2. SOMAR QUANTIDADE VENDIDA
         // ====================================================
 
         const vendasPorProduto = {};
 
-        let pedidosEntregues = 0;
-        let pedidosIgnorados = 0;
-        let itensProcessados = 0;
-
 
         pedidos.forEach(
-            (pedido, pedidoIndex) => {
-
-                console.log(
-                    `📦 Pedido #${pedidoIndex + 1}:`,
-                    pedido
-                );
-
+            (pedido) => {
 
                 // ============================================
-                // STATUS
+                // STATUS DO PEDIDO
                 // ============================================
 
                 const status =
@@ -5480,59 +5378,36 @@ async function carregarMaisVendidos() {
                     ).toUpperCase();
 
 
-                console.log(
-                    `📌 Pedido #${pedidoIndex + 1} STATUS:`,
-                    status
-                );
-
-
                 // ============================================
-                // SOMENTE ENTREGUES
+                // SOMENTE DELIVERED
                 // ============================================
 
-                if (status !== "DELIVERED") {
-
-                    pedidosIgnorados++;
-
-                    console.log(
-                        `⏭️ Pedido #${pedidoIndex + 1} ignorado. Status: ${status}`
-                    );
+                if (
+                    status !== "DELIVERED"
+                ) {
 
                     return;
+
                 }
-
-
-                pedidosEntregues++;
 
 
                 // ============================================
                 // ITENS
                 // ============================================
 
-                if (!Array.isArray(pedido.itens)) {
-
-                    console.warn(
-                        `⚠️ Pedido #${pedidoIndex + 1} não possui itens:`,
+                if (
+                    !Array.isArray(
                         pedido.itens
-                    );
+                    )
+                ) {
 
                     return;
+
                 }
 
 
-                console.log(
-                    `🛍️ Pedido #${pedidoIndex + 1} possui ${pedido.itens.length} itens.`
-                );
-
-
                 pedido.itens.forEach(
-                    (item, itemIndex) => {
-
-                        console.log(
-                            `🛍️ Item ${itemIndex + 1}:`,
-                            item
-                        );
-
+                    (item) => {
 
                         const productId =
                             item.productId;
@@ -5540,12 +5415,8 @@ async function carregarMaisVendidos() {
 
                         if (!productId) {
 
-                            console.warn(
-                                "⚠️ Item sem productId:",
-                                item
-                            );
-
                             return;
+
                         }
 
 
@@ -5555,34 +5426,31 @@ async function carregarMaisVendidos() {
                             );
 
 
-                        if (quantidade <= 0) {
-
-                            console.warn(
-                                "⚠️ Quantidade inválida:",
-                                quantidade,
-                                item
-                            );
+                        if (
+                            quantidade <= 0
+                        ) {
 
                             return;
+
                         }
 
 
-                        itensProcessados++;
-
-
                         // ====================================
-                        // PRIMEIRA VENDA
+                        // CRIA REGISTRO
                         // ====================================
 
                         if (
-                            !vendasPorProduto[productId]
+                            !vendasPorProduto[
+                                productId
+                            ]
                         ) {
 
                             vendasPorProduto[
                                 productId
                             ] = {
 
-                                productId,
+                                productId:
+                                    productId,
 
                                 name:
                                     item.name ||
@@ -5596,28 +5464,17 @@ async function carregarMaisVendidos() {
 
 
                         // ====================================
-                        // SOMAR
+                        // SOMA
                         // ====================================
 
                         vendasPorProduto[
                             productId
                         ].quantity += quantidade;
 
-
-                        console.log(
-                            `➕ Produto ${productId}: +${quantidade}`
-                        );
-
                     }
                 );
 
             }
-        );
-
-
-        console.log(
-            "📊 VENDAS POR PRODUTO:",
-            vendasPorProduto
         );
 
 
@@ -5638,73 +5495,9 @@ async function carregarMaisVendidos() {
 
 
         console.log(
-            "🏆 TOP 3:",
+            "🏆 Ranking calculado:",
             ranking
         );
-
-
-        // ====================================================
-        // ALERTA — RANKING
-        // ====================================================
-
-        await Swal.fire({
-            icon: ranking.length > 0
-                ? "success"
-                : "warning",
-
-            title: "🏆 Resultado do Ranking",
-
-            html: `
-                <div style="text-align:left">
-
-                    <p>
-                        📦 Total de pedidos:
-                        <strong>${pedidos.length}</strong>
-                    </p>
-
-                    <p>
-                        ✅ Entregues:
-                        <strong>${pedidosEntregues}</strong>
-                    </p>
-
-                    <p>
-                        ⏭️ Ignorados:
-                        <strong>${pedidosIgnorados}</strong>
-                    </p>
-
-                    <p>
-                        🛍️ Itens processados:
-                        <strong>${itensProcessados}</strong>
-                    </p>
-
-                    <hr>
-
-                    ${
-                        ranking.length
-                            ? ranking.map(
-                                (item, index) => `
-                                    <p>
-                                        <strong>${index + 1}º</strong>
-                                        ${item.name}
-                                        —
-                                        <strong>${item.quantity}</strong>
-                                        vendas
-                                    </p>
-                                `
-                              ).join("")
-                            : `
-                                <p>
-                                    ❌ Nenhum produto vendido
-                                    em pedidos DELIVERED.
-                                </p>
-                            `
-                    }
-
-                </div>
-            `,
-
-            confirmButtonText: "Continuar"
-        });
 
 
         // ====================================================
@@ -5715,13 +5508,12 @@ async function carregarMaisVendidos() {
             ranking.length === 0
         ) {
 
-            section.classList.add("hidden");
-
             console.log(
-                "ℹ️ Nenhuma venda encontrada."
+                "ℹ️ Nenhum produto vendido encontrado."
             );
 
             return;
+
         }
 
 
@@ -5729,40 +5521,21 @@ async function carregarMaisVendidos() {
         // 5. BUSCAR PRODUTOS
         // ====================================================
 
-        Swal.fire({
-            title: "🛍️ Buscando produtos...",
-            html: "Consultando API de produtos...",
-            allowOutsideClick: false,
-            didOpen: () => {
-                Swal.showLoading();
-            }
-        });
-
-
-        const productsURL =
-            "https://essenzaintimasapi.onrender.com/products";
-
-
         console.log(
-            "🌐 URL produtos:",
-            productsURL
+            "🛍️ Buscando produtos..."
         );
 
 
         const productsResponse =
-            await fetch(productsURL);
-
-
-        console.log(
-            "📡 Status produtos:",
-            productsResponse.status
-        );
+            await fetch(
+                API_URL
+            );
 
 
         if (!productsResponse.ok) {
 
             throw new Error(
-                `Erro HTTP ao buscar produtos: ${productsResponse.status}`
+                `Erro ao buscar produtos: HTTP ${productsResponse.status}`
             );
 
         }
@@ -5770,12 +5543,6 @@ async function carregarMaisVendidos() {
 
         const productsData =
             await productsResponse.json();
-
-
-        console.log(
-            "🛍️ RESPOSTA COMPLETA PRODUTOS:",
-            productsData
-        );
 
 
         const products =
@@ -5791,12 +5558,6 @@ async function carregarMaisVendidos() {
                 );
 
 
-        console.log(
-            "🛍️ PRODUTOS NORMALIZADOS:",
-            products
-        );
-
-
         if (!Array.isArray(products)) {
 
             throw new Error(
@@ -5807,53 +5568,44 @@ async function carregarMaisVendidos() {
 
 
         // ====================================================
-        // 6. ENCONTRAR PRODUTOS
+        // 6. CRUZAR RANKING COM PRODUTOS
         // ====================================================
 
         const topProducts =
             ranking
                 .map(
-                    (rankingItem) => {
+                    (venda) => {
 
-                        console.log(
-                            "🔎 Procurando produto:",
-                            rankingItem.productId
-                        );
-
-
-                        const product =
+                        const produto =
                             products.find(
-                                (p) =>
-                                    String(p.id) ===
+                                (product) =>
                                     String(
-                                        rankingItem.productId
+                                        product.id
+                                    ) ===
+                                    String(
+                                        venda.productId
                                     )
                             );
 
 
-                        if (!product) {
+                        if (!produto) {
 
                             console.warn(
-                                "⚠️ Produto NÃO encontrado:",
-                                rankingItem.productId
+                                "⚠️ Produto não encontrado na API:",
+                                venda.productId
                             );
 
                             return null;
+
                         }
-
-
-                        console.log(
-                            "✅ Produto encontrado:",
-                            product
-                        );
 
 
                         return {
 
-                            ...product,
+                            ...produto,
 
                             quantidadeVendida:
-                                rankingItem.quantity
+                                venda.quantity
 
                         };
 
@@ -5862,239 +5614,513 @@ async function carregarMaisVendidos() {
                 .filter(Boolean);
 
 
-        console.log(
-            "🎯 PRODUTOS FINAIS:",
-            topProducts
-        );
-
-
-        // ====================================================
-        // ALERTA — PRODUTOS ENCONTRADOS
-        // ====================================================
-
-        Swal.close();
-
-        await Swal.fire({
-
-            icon:
-                topProducts.length > 0
-                    ? "success"
-                    : "warning",
-
-            title: "🎯 Produtos encontrados",
-
-            html: `
-                <div style="text-align:left">
-
-                    <p>
-                        🏆 Ranking:
-                        <strong>${ranking.length}</strong>
-                    </p>
-
-                    <p>
-                        🛍️ Produtos encontrados:
-                        <strong>${topProducts.length}</strong>
-                    </p>
-
-                    <hr>
-
-                    ${
-                        topProducts.length
-                            ? topProducts.map(
-                                (product, index) => `
-                                    <p>
-                                        <strong>
-                                            ${index + 1}º
-                                        </strong>
-                                        ${product.name || "Sem nome"}
-                                        —
-                                        ${product.quantidadeVendida}
-                                        vendas
-                                    </p>
-                                `
-                              ).join("")
-                            : `
-                                <p>
-                                    ❌ Nenhum produto do ranking
-                                    foi encontrado na API.
-                                </p>
-                            `
-                    }
-
-                </div>
-            `,
-
-            confirmButtonText: "Renderizar"
-        });
-
-
-        // ====================================================
-        // 7. RENDERIZAR
-        // ====================================================
-
-        console.log(
-            "🎨 Renderizando cards..."
-        );
-
-
-        container.innerHTML =
-            topProducts
-                .map(
-                    (product, index) =>
-                        renderMaisVendidoCard(
-                            product,
-                            index
-                        )
-                )
-                .join("");
-
-
-        console.log(
-            "🎨 HTML GERADO:",
-            container.innerHTML
-        );
-
-
-        // ====================================================
-        // 8. MOSTRAR
-        // ====================================================
-
         if (
-            topProducts.length > 0
+            topProducts.length === 0
         ) {
 
-            section.classList.remove(
-                "hidden"
+            console.warn(
+                "⚠️ Nenhum produto do ranking foi encontrado na API."
             );
 
-
-            console.log(
-                "👁️ Seção Mais Vendidos exibida."
-            );
-
-        } else {
-
-            section.classList.add(
-                "hidden"
-            );
+            return;
 
         }
 
 
         // ====================================================
-        // FINAL
+        // 7. GERAR OS MESMOS CARDS DO CATÁLOGO
         // ====================================================
 
-        await Swal.fire({
+        container.innerHTML =
+            topProducts
+                .map(
+                    (product, index) => {
 
-            icon: "success",
+                        // ====================================
+                        // SKU
+                        // ====================================
 
-            title: "✨ Mais Vendidos carregado!",
+                        const primeiroSku =
+                            Array.isArray(
+                                product.skus
+                            ) &&
+                            product.skus.length > 0
 
-            html: `
-                <div style="text-align:left">
+                                ? product.skus[0]
 
-                    <p>
-                        🏆 Produtos exibidos:
-                        <strong>${topProducts.length}</strong>
-                    </p>
+                                : null;
 
-                    <p>
-                        📦 Pedidos analisados:
-                        <strong>${pedidos.length}</strong>
-                    </p>
 
-                    <p>
-                        ✅ Pedidos entregues:
-                        <strong>${pedidosEntregues}</strong>
-                    </p>
+                        // ====================================
+                        // PREÇO
+                        // ====================================
 
-                    <hr>
+                        const preco =
+                            primeiroSku
 
-                    <p>
-                        Se os cards apareceram corretamente,
-                        o ranking está funcionando.
-                    </p>
+                                ? Number(
+                                    primeiroSku.price
+                                ) || 0
 
-                </div>
-            `,
+                                : Number(
+                                    product.basePrice
+                                ) || 0;
 
-            timer: 2500,
-            showConfirmButton: false
 
-        });
+                        const precoFormatado =
+                            preco.toLocaleString(
+                                "pt-BR",
+                                {
+                                    style: "currency",
+                                    currency: "BRL"
+                                }
+                            );
+
+
+                        // ====================================
+                        // IMAGEM
+                        // ====================================
+
+                        const imageUrl =
+                            Array.isArray(
+                                product.images
+                            ) &&
+                            product.images.length > 0
+
+                                ? product.images[0]
+
+                                : "";
+
+
+                        // ====================================
+                        // PRODUTO
+                        // ====================================
+
+                        const productEncoded =
+                            encodeURIComponent(
+                                JSON.stringify(
+                                    product
+                                )
+                            );
+
+
+                        // ====================================
+                        // POSIÇÃO
+                        // ====================================
+
+                        const posicao =
+                            index + 1;
+
+
+                        const medalha =
+                            posicao === 1
+                                ? "🥇"
+                                : posicao === 2
+                                    ? "🥈"
+                                    : "🥉";
+
+
+                        // ====================================
+                        // CARD
+                        // ====================================
+
+                        return `
+
+                            <div
+
+                                class="
+                                    group
+                                    bg-white
+                                    rounded-2xl
+                                    border
+                                    border-[#E8D8CF]/60
+                                    overflow-hidden
+                                    shadow-[0_4px_20px_rgba(38,33,30,0.03)]
+                                    hover:shadow-[0_10px_25px_rgba(158,121,96,0.12)]
+                                    hover:border-[#9E7960]/50
+                                    transition-all
+                                    duration-300
+                                    cursor-pointer
+                                    flex
+                                    flex-col
+                                    justify-between
+                                    relative
+                                "
+
+                                onclick="openProductDetails(
+                                    JSON.parse(
+                                        decodeURIComponent('${productEncoded}')
+                                    )
+                                )"
+
+                            >
+
+                                <!-- ============================ -->
+                                <!-- POSIÇÃO -->
+                                <!-- ============================ -->
+
+                                <div
+                                    class="
+                                        absolute
+                                        top-2.5
+                                        left-2.5
+                                        z-20
+                                        flex
+                                        items-center
+                                        gap-1
+                                        bg-white/90
+                                        backdrop-blur-md
+                                        rounded-full
+                                        px-2.5
+                                        py-1
+                                        shadow-sm
+                                        border
+                                        border-[#E8D8CF]/60
+                                    "
+                                >
+
+                                    <span class="text-sm">
+
+                                        ${medalha}
+
+                                    </span>
+
+                                    <span
+                                        class="
+                                            text-[9px]
+                                            font-bold
+                                            uppercase
+                                            tracking-wider
+                                            text-[#26211E]
+                                        "
+                                    >
+
+                                        #${posicao}
+
+                                    </span>
+
+                                </div>
+
+
+                                <!-- ============================ -->
+                                <!-- IMAGEM -->
+                                <!-- ============================ -->
+
+                                <div
+                                    class="
+                                        relative
+                                        w-full
+                                        aspect-[3/4]
+                                        bg-[#FAF6F4]
+                                        overflow-hidden
+                                    "
+                                >
+
+                                    ${
+                                        imageUrl
+
+                                            ? `
+
+                                                <img
+
+                                                    src="${imageUrl}"
+
+                                                    alt="${product.name}"
+
+                                                    class="
+                                                        w-full
+                                                        h-full
+                                                        object-cover
+                                                        object-center
+                                                        group-hover:scale-105
+                                                        transition-transform
+                                                        duration-500
+                                                    "
+
+                                                    loading="lazy"
+
+                                                    onerror="
+                                                        this.style.display='none';
+                                                        this.nextElementSibling.classList.remove('hidden');
+                                                    "
+
+                                                />
+
+                                                <div
+                                                    class="
+                                                        hidden
+                                                        absolute
+                                                        inset-0
+                                                        flex
+                                                        flex-col
+                                                        items-center
+                                                        justify-center
+                                                        text-[#8C7A6B]/50
+                                                        p-4
+                                                        text-center
+                                                    "
+                                                >
+
+                                                    <i
+                                                        class="
+                                                            fas
+                                                            fa-gem
+                                                            text-2xl
+                                                            mb-1
+                                                        "
+                                                    ></i>
+
+                                                    <span
+                                                        class="
+                                                            text-[10px]
+                                                            font-medium
+                                                            tracking-wider
+                                                            uppercase
+                                                        "
+                                                    >
+
+                                                        Imagem indisponível
+
+                                                    </span>
+
+                                                </div>
+
+                                            `
+
+                                            : `
+
+                                                <div
+                                                    class="
+                                                        w-full
+                                                        h-full
+                                                        flex
+                                                        flex-col
+                                                        items-center
+                                                        justify-center
+                                                        text-[#8C7A6B]/50
+                                                        p-4
+                                                        text-center
+                                                    "
+                                                >
+
+                                                    <i
+                                                        class="
+                                                            fas
+                                                            fa-gem
+                                                            text-2xl
+                                                            mb-1
+                                                        "
+                                                    ></i>
+
+                                                    <span
+                                                        class="
+                                                            text-[10px]
+                                                            font-medium
+                                                            tracking-wider
+                                                            uppercase
+                                                        "
+                                                    >
+
+                                                        Sem imagem
+
+                                                    </span>
+
+                                                </div>
+
+                                            `
+                                    }
+
+
+                                    <!-- ======================== -->
+                                    <!-- ÍCONE -->
+                                    <!-- ======================== -->
+
+                                    <div
+                                        class="
+                                            absolute
+                                            top-2.5
+                                            right-2.5
+                                            bg-white/80
+                                            backdrop-blur-md
+                                            rounded-full
+                                            p-1.5
+                                            shadow-sm
+                                            text-[#26211E]
+                                            opacity-0
+                                            group-hover:opacity-100
+                                            transition-opacity
+                                        "
+                                    >
+
+                                        <svg
+                                            class="w-3.5 h-3.5"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                        >
+
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="1.5"
+                                                d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+                                            />
+
+                                        </svg>
+
+                                    </div>
+
+                                </div>
+
+
+                                <!-- ============================ -->
+                                <!-- DETALHES -->
+                                <!-- ============================ -->
+
+                                <div
+                                    class="
+                                        p-3.5
+                                        flex
+                                        flex-col
+                                        flex-1
+                                        justify-between
+                                        bg-white
+                                    "
+                                >
+
+                                    <div>
+
+                                        <h4
+                                            class="
+                                                font-medium
+                                                text-[#26211E]
+                                                text-xs
+                                                sm:text-sm
+                                                tracking-wide
+                                                line-clamp-1
+                                                group-hover:text-[#9E7960]
+                                                transition-colors
+                                            "
+                                        >
+
+                                            ${product.name}
+
+                                        </h4>
+
+
+                                        ${
+                                            product.description
+
+                                                ? `
+
+                                                    <p
+                                                        class="
+                                                            text-[#8C7A6B]
+                                                            text-[10px]
+                                                            line-clamp-2
+                                                            mt-1
+                                                            leading-relaxed
+                                                            font-light
+                                                        "
+                                                    >
+
+                                                        ${product.description}
+
+                                                    </p>
+
+                                                `
+
+                                                : ""
+                                        }
+
+                                    </div>
+
+
+                                    <!-- ======================== -->
+                                    <!-- PREÇO -->
+                                    <!-- ======================== -->
+
+                                    <div
+                                        class="
+                                            mt-3
+                                            pt-2
+                                            border-t
+                                            border-[#E8D8CF]/40
+                                            flex
+                                            items-center
+                                            justify-between
+                                            gap-2
+                                        "
+                                    >
+
+                                        <span
+                                            class="
+                                                font-semibold
+                                                text-[#26211E]
+                                                text-xs
+                                                sm:text-sm
+                                            "
+                                        >
+
+                                            ${precoFormatado}
+
+                                        </span>
+
+
+                                        <span
+                                            class="
+                                                text-[9px]
+                                                uppercase
+                                                tracking-wider
+                                                font-semibold
+                                                text-[#9E7960]
+                                                whitespace-nowrap
+                                            "
+                                        >
+
+                                            ${product.quantidadeVendida}x vendido
+
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        `;
+
+                    }
+                )
+                .join("");
+
+
+        // ====================================================
+        // 8. MOSTRAR SEÇÃO
+        // ====================================================
+
+        section.classList.remove(
+            "hidden"
+        );
 
 
         console.log(
-            `✅ ${topProducts.length} produtos no ranking.`
+            "🏆 Mais Vendidos renderizado com sucesso."
         );
 
 
     } catch (error) {
 
         console.error(
-            "❌ ERRO COMPLETO:",
+            "❌ Erro no Mais Vendidos:",
             error
         );
 
 
-        Swal.close();
-
-
         // ====================================================
-        // ALERTA DE ERRO COMPLETO
+        // ESCONDER SEÇÃO EM CASO DE ERRO
         // ====================================================
 
-        Swal.fire({
-
-            icon: "error",
-
-            title: "❌ Erro no Mais Vendidos",
-
-            html: `
-                <div style="text-align:left">
-
-                    <p>
-                        O carregamento dos Mais Vendidos
-                        encontrou um erro.
-                    </p>
-
-                    <hr>
-
-                    <p>
-                        <strong>Mensagem:</strong>
-                    </p>
-
-                    <pre style="
-                        white-space:pre-wrap;
-                        background:#f5f5f5;
-                        padding:10px;
-                        border-radius:8px;
-                        font-size:12px;
-                    ">${error.message}</pre>
-
-                    <p>
-                        <strong>Tipo:</strong>
-                        ${error.name || "Error"}
-                    </p>
-
-                    <hr>
-
-                    <p>
-                        🔎 Veja também o
-                        <strong>Console do navegador</strong>
-                        para o objeto completo.
-                    </p>
-
-                </div>
-            `,
-
-            confirmButtonText: "Fechar"
-
-        });
-
-
-        // Não quebra o catálogo
         section.classList.add(
             "hidden"
         );
