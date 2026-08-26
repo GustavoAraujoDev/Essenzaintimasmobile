@@ -4659,13 +4659,54 @@ async function validateCoupon() {
       appliedCouponCode = result.code;
       computedDiscount = parseFloat(result.discountValue) || 0;
 
-      // 🔥 NOVA REGRA: Se o código do cupom for de Frete Grátis
-      if (
-        appliedCouponCode === "FRETEGRATIS" ||
-        appliedCouponCode === "QUEROFRETE"
-      ) {
-        taxaEntregaAtual = 0; // Zera a variável global da taxa de entrega
-        computedDiscount = 0; // Zera o desconto em dinheiro para não acumular os dois
+     // ============================================================
+// 🎟️ IDENTIFICAÇÃO AUTOMÁTICA DE CUPOM DE FRETE
+// ============================================================
+
+const cupomValidado = String(appliedCouponCode || "")
+  .normalize("NFD")
+  .replace(/[\u0300-\u036f]/g, "")
+  .toUpperCase()
+  .replace(/\s+/g, "");
+
+const cupomFreteGratis =
+  cupomValidado.includes("FRETE") ||
+  cupomValidado.includes("ENTREGA");
+
+
+// ============================================================
+// 🆓 FRETE GRÁTIS
+// ============================================================
+
+if (cupomFreteGratis) {
+
+  taxaEntregaAtual = 0;
+
+  // Não acumula desconto monetário + frete grátis
+  computedDiscount = 0;
+
+  const infoText =
+    document.getElementById("delivery-info");
+
+  if (infoText) {
+    infoText.innerHTML =
+      `🛵 Cupom Aplicado: <b class="text-emerald-600">
+        FRETE GRÁTIS ATIVADO!
+      </b>`;
+  }
+
+  showCouponMessage(
+    "Cupom de Frete Grátis aplicado com sucesso!",
+    "success"
+  );
+
+} else {
+
+  showCouponMessage(
+    `Cupom ${result.code} aplicado!`,
+    "success"
+  );
+}
 
         // Atualiza visualmente o texto informativo do bairro (se houver)
         const infoText = document.getElementById("delivery-info");
