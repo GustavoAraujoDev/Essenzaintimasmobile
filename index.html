@@ -202,8 +202,8 @@
 
 <aside
   id="mobileMenu"
-  class="fixed top-0 left-0 h-full w-[290px] bg-[#F8F5F2] z-[999] transform -translate-x-full transition-transform duration-300 shadow-xl">
-
+  class="fixed top-0 left-0 h-full w-[290px] max-w-[85vw] overflow-y-auto bg-[#F8F5F2] z-[999] transform -translate-x-full transition-transform duration-300 shadow-xl"
+>
   <!-- ========================================================
        CABEÇALHO
        ======================================================== -->
@@ -582,12 +582,16 @@
     </div>
 
     <!-- Centro: Logo Tipográfica Luxuosa -->
-    <a href="javascript:void(0)" onclick="switchTab('menu')" class="text-2xl sm:text-3xl font-serif-luxury tracking-[0.2em] text-[#26211E] font-medium uppercase italic hover:opacity-80 transition-opacity">
-      Essenza Intimas
-    </a>
-
+   <a
+  href="javascript:void(0)"
+  onclick="switchTab('menu')"
+  class="shrink-0 text-2xl sm:text-3xl font-serif-luxury tracking-[0.2em] text-[#26211E] font-medium uppercase italic hover:opacity-80 transition-opacity"
+>
+  Essenza Intimas
+</a>
+    
     <!-- Lado Direito: Ações & Busca -->
-    <div class="flex items-center gap-4 sm:gap-6">
+    <div class="flex items-center gap-4 sm:gap-6 shrink-0">
       <!-- Busca Expandível / Botão -->
         <!-- Busca Expandível / Botão -->
       <div class="relative">
