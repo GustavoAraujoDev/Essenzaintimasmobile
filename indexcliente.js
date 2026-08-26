@@ -4676,93 +4676,163 @@ function atualizarTotaisComDesconto(discount = 0) {
 // ==========================================
 // 2. VALIDAÇÃO DO CUPOM
 // ==========================================
+// ==========================================
+// 🎟️ VALIDAR CUPOM — DEBUG COMPLETO
+// ==========================================
 async function validateCoupon() {
-
-  // ============================================================
-  // 📱 TELEFONE
-  // ============================================================
-
-  const phoneElement =
-    document.getElementById("client-phone");
-
-  const phoneInput =
-    phoneElement
-      ? phoneElement.value.trim()
-      : "";
-
-
-  // ============================================================
-  // 🎟️ CUPOM
-  // ============================================================
-
-  const couponInput =
-    document.getElementById("coupon-code");
-
-  const codeInput =
-    couponInput
-      ? couponInput.value.toUpperCase().trim()
-      : "";
-
-
-  // ============================================================
-  // 💰 SUBTOTAL
-  // ============================================================
-
-  const elementoSubtotal =
-    document.getElementById("cart-subtotal");
-
-  const textSubtotal =
-    elementoSubtotal
-      ? elementoSubtotal.innerText
-      : "R$ 0,00";
-
-  const currentSubtotal =
-    parseFloat(
-      textSubtotal
-        .replace(",", ".")
-        .replace(/[^\d.]/g, "")
-    ) || 0;
-
-
-  // ============================================================
-  // 🔐 VALIDAÇÕES BÁSICAS
-  // ============================================================
-
-  if (!phoneInput) {
-
-    showCouponMessage(
-      "Digite seu WhatsApp primeiro na seção 'Seus Dados'.",
-      "error"
-    );
-
-    if (phoneElement) {
-      phoneElement.focus();
-    }
-
-    return;
-  }
-
-
-  if (!codeInput) {
-
-    showCouponMessage(
-      "Por favor, insira o código do cupom.",
-      "error"
-    );
-
-    return;
-  }
-
-
-  // ============================================================
-  // 🌐 REQUISIÇÃO PARA API
-  // ============================================================
 
   try {
 
+    // ============================================================
+    // 1️⃣ ELEMENTOS
+    // ============================================================
+
+    const phoneElement =
+      document.getElementById("client-phone");
+
+    const couponElement =
+      document.getElementById("coupon-code");
+
+    const subtotalElement =
+      document.getElementById("cart-subtotal");
+
+
+    if (!phoneElement) {
+      alert("❌ DEBUG CUPOM\n\nElemento #client-phone não encontrado.");
+      return;
+    }
+
+    if (!couponElement) {
+      alert("❌ DEBUG CUPOM\n\nElemento #coupon-code não encontrado.");
+      return;
+    }
+
+
+    // ============================================================
+    // 2️⃣ DADOS
+    // ============================================================
+
+    const phoneInput =
+      phoneElement.value.trim();
+
+    const codeInput =
+      couponElement.value
+        .toUpperCase()
+        .trim();
+
+
+    const textSubtotal =
+      subtotalElement
+        ? subtotalElement.innerText
+        : "R$ 0,00";
+
+
+    // ============================================================
+    // 3️⃣ CONVERTER SUBTOTAL CORRETAMENTE
+    // ============================================================
+
+    const currentSubtotal =
+      Number(
+        textSubtotal
+          .replace("R$", "")
+          .replace(/\s/g, "")
+          .replace(/\./g, "")
+          .replace(",", ".")
+      ) || 0;
+
+
+    // ============================================================
+    // 🔎 DEBUG DOS DADOS
+    // ============================================================
+
+    alert(
+      "🔎 DEBUG CUPOM — DADOS\n\n" +
+      "WhatsApp: " + phoneInput + "\n" +
+      "Cupom: " + codeInput + "\n" +
+      "Subtotal exibido: " + textSubtotal + "\n" +
+      "Subtotal enviado: " + currentSubtotal
+    );
+
+
+    // ============================================================
+    // 4️⃣ VALIDAÇÕES
+    // ============================================================
+
+    if (!phoneInput) {
+
+      showCouponMessage(
+        "Digite seu WhatsApp primeiro na seção 'Seus Dados'.",
+        "error"
+      );
+
+      phoneElement.focus();
+
+      return;
+    }
+
+
+    if (!codeInput) {
+
+      showCouponMessage(
+        "Por favor, insira o código do cupom.",
+        "error"
+      );
+
+      return;
+    }
+
+
+    // ============================================================
+    // 5️⃣ VERIFICAR API_BASE_COUPONS
+    // ============================================================
+
+    if (
+      typeof API_BASE_COUPONS === "undefined" ||
+      !API_BASE_COUPONS
+    ) {
+
+      alert(
+        "❌ DEBUG CUPOM\n\n" +
+        "API_BASE_COUPONS não está definida.\n\n" +
+        "O JavaScript não sabe qual é o endereço da API."
+      );
+
+      console.error(
+        "❌ API_BASE_COUPONS não definida."
+      );
+
+      return;
+    }
+
+
+    // ============================================================
+    // 6️⃣ MONTAR URL
+    // ============================================================
+
+    const url =
+      `${API_BASE_COUPONS}/coupons/validate`;
+
+
+    alert(
+      "🌐 DEBUG CUPOM — CONECTANDO\n\n" +
+      "URL:\n" +
+      url
+    );
+
+
+    console.log(
+      "🌐 URL da validação:",
+      url
+    );
+
+
+    // ============================================================
+    // 7️⃣ FAZER REQUEST
+    // ============================================================
+
     const response =
       await fetch(
-        `${API_BASE_COUPONS}/coupons/validate`,
+        url,
         {
           method: "POST",
 
@@ -4780,46 +4850,117 @@ async function validateCoupon() {
 
 
     // ============================================================
-    // 📦 TENTA LER RESPOSTA DA API
+    // 8️⃣ DEBUG HTTP
     // ============================================================
 
-    let result = {};
-
-    try {
-      result = await response.json();
-    } catch (jsonError) {
-
-      console.error(
-        "Resposta da API não é JSON:",
-        jsonError
-      );
-
-      throw new Error(
-        `Resposta inválida da API (${response.status})`
-      );
-    }
+    alert(
+      "📡 DEBUG CUPOM — RESPOSTA DO SERVIDOR\n\n" +
+      "HTTP Status: " +
+      response.status +
+      "\n\n" +
+      "OK: " +
+      response.ok
+    );
 
 
     console.log(
-      "🎟️ Resposta da validação do cupom:",
+      "📡 Status:",
+      response.status
+    );
+
+    console.log(
+      "📡 Headers:",
+      [...response.headers.entries()]
+    );
+
+
+    // ============================================================
+    // 9️⃣ LER RESPOSTA COMO TEXTO PRIMEIRO
+    // ============================================================
+    // Isso evita que response.json() esconda o erro real
+    // caso o backend esteja retornando HTML ou texto.
+
+    const responseText =
+      await response.text();
+
+
+    alert(
+      "📦 DEBUG CUPOM — RESPOSTA RAW\n\n" +
+      responseText.substring(0, 1500)
+    );
+
+
+    console.log(
+      "📦 Resposta RAW da API:",
+      responseText
+    );
+
+
+    // ============================================================
+    // 🔟 CONVERTER JSON
+    // ============================================================
+
+    let result;
+
+    try {
+
+      result =
+        JSON.parse(responseText);
+
+    } catch (jsonError) {
+
+      alert(
+        "❌ DEBUG CUPOM — ERRO JSON\n\n" +
+        "O servidor respondeu, mas não retornou JSON válido.\n\n" +
+        "Resposta:\n" +
+        responseText.substring(0, 1000)
+      );
+
+      console.error(
+        "❌ Erro JSON:",
+        jsonError
+      );
+
+      return;
+    }
+
+
+    // ============================================================
+    // 1️⃣1️⃣ MOSTRAR RESULTADO
+    // ============================================================
+
+    alert(
+      "✅ DEBUG CUPOM — JSON RECEBIDO\n\n" +
+      JSON.stringify(
+        result,
+        null,
+        2
+      ).substring(0, 2000)
+    );
+
+
+    console.log(
+      "🎟️ Resultado:",
       result
     );
 
 
     // ============================================================
-    // ❌ CUPOM INVÁLIDO
+    // 1️⃣2️⃣ CUPOM INVÁLIDO
     // ============================================================
 
-    if (!response.ok || !result.valid) {
+    if (
+      !response.ok ||
+      !result.valid
+    ) {
 
       showCouponMessage(
         result.error ||
-          "Cupom inválido para esta compra.",
+        result.message ||
+        "Cupom inválido para esta compra.",
         "error"
       );
 
-
-      // Reset dos estados
 
       appliedCouponCode = null;
 
@@ -4834,12 +4975,13 @@ async function validateCoupon() {
 
       atualizarTotaisComDesconto(0);
 
+
       return;
     }
 
 
     // ============================================================
-    // ✅ CUPOM VÁLIDO
+    // 1️⃣3️⃣ CUPOM VÁLIDO
     // ============================================================
 
     appliedCouponCode =
@@ -4857,7 +4999,7 @@ async function validateCoupon() {
 
 
     // ============================================================
-    // 🎟️ IDENTIFICA CUPOM DE FRETE
+    // 1️⃣4️⃣ IDENTIFICAR FRETE GRÁTIS
     // ============================================================
 
     const cupomValidado =
@@ -4874,39 +5016,31 @@ async function validateCoupon() {
 
 
     // ============================================================
-    // 🆓 CUPOM DE FRETE GRÁTIS
+    // 1️⃣5️⃣ CUPOM DE FRETE
     // ============================================================
 
     if (cupomFreteGratis) {
 
-      // Zera o frete
       taxaEntregaAtual = 0;
 
-      // Evita acumular desconto monetário
-      // com frete grátis
       computedDiscount = 0;
 
 
-      // ----------------------------------------------------------
-      // 📍 ATUALIZA INFORMAÇÃO DE ENTREGA
-      // ----------------------------------------------------------
-
       const infoText =
-        document.getElementById("delivery-info");
+        document.getElementById(
+          "delivery-info"
+        );
+
 
       if (infoText) {
 
         infoText.innerHTML =
           `🛵 Cupom Aplicado:
-           <b class="text-emerald-600">
-             FRETE GRÁTIS ATIVADO!
-           </b>`;
+          <b class="text-emerald-600">
+            FRETE GRÁTIS ATIVADO!
+          </b>`;
       }
 
-
-      // ----------------------------------------------------------
-      // 🎉 MENSAGEM
-      // ----------------------------------------------------------
 
       showCouponMessage(
         "Cupom de Frete Grátis aplicado com sucesso!",
@@ -4916,7 +5050,7 @@ async function validateCoupon() {
     } else {
 
       // ==========================================================
-      // 💰 CUPOM DE DESCONTO NORMAL
+      // 💰 CUPOM NORMAL
       // ==========================================================
 
       showCouponMessage(
@@ -4927,7 +5061,7 @@ async function validateCoupon() {
 
 
     // ============================================================
-    // 🖥️ ATUALIZA INTERFACE DO CUPOM
+    // 1️⃣6️⃣ ATUALIZAR INTERFACE
     // ============================================================
 
     updateCouponUI(
@@ -4936,44 +5070,66 @@ async function validateCoupon() {
     );
 
 
-    // ============================================================
-    // 🧮 RECALCULA VALORES
-    // ============================================================
-
     atualizarTotaisComDesconto(
       computedDiscount
     );
 
 
+    // ============================================================
+    // 🎉 SUCESSO
+    // ============================================================
+
+    alert(
+      "🎉 CUPOM APLICADO COM SUCESSO!\n\n" +
+      "Código: " +
+      appliedCouponCode +
+      "\n" +
+      "Desconto: R$ " +
+      computedDiscount
+        .toFixed(2)
+        .replace(".", ",") +
+      "\n" +
+      "Frete: R$ " +
+      Number(taxaEntregaAtual || 0)
+        .toFixed(2)
+        .replace(".", ",")
+    );
+
+
   } catch (error) {
 
+    // ============================================================
+    // 🚨 ERRO REAL
+    // ============================================================
+
     console.error(
-      "❌ Erro completo na validação do cupom:",
+      "❌ ERRO COMPLETO AO VALIDAR CUPOM:",
       error
     );
 
 
-    // ============================================================
-    // 🔎 MENSAGEM MAIS PRECISA
-    // ============================================================
+    alert(
+      "🚨 ERRO REAL AO VALIDAR CUPOM\n\n" +
 
-    if (
-      error instanceof TypeError &&
-      error.message.includes("fetch")
-    ) {
+      "Tipo:\n" +
+      (error?.name || "Desconhecido") +
 
-      showCouponMessage(
-        "Não foi possível conectar ao servidor de cupons.",
-        "error"
-      );
+      "\n\nMensagem:\n" +
+      (error?.message || error) +
 
-    } else {
+      "\n\nAPI:\n" +
+      (
+        typeof API_BASE_COUPONS !== "undefined"
+          ? API_BASE_COUPONS
+          : "NÃO DEFINIDA"
+      )
+    );
 
-      showCouponMessage(
-        "Erro ao validar o cupom. Tente novamente.",
-        "error"
-      );
-    }
+
+    showCouponMessage(
+      "Erro ao validar o cupom. Veja o diagnóstico.",
+      "error"
+    );
   }
 }
 // ==========================================
