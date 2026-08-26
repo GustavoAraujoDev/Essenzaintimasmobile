@@ -3538,7 +3538,7 @@ function renderCart() {
     `R$ ${subtotal.toFixed(2).replace(".", ",")}`;
 
   if (document.getElementById("cart-shipping")) {
-    const taxa = typeof taxaEntregaAtual !== "undefined" ? taxaEntregaAtual : 0;
+    let taxa = typeof taxaEntregaAtual !== "undefined" ? taxaEntregaAtual : 0;
 
    // 🔥 CORREÇÃO VISUAL: Cupom de frete grátis
 const cupomAtual = String(
@@ -3578,7 +3578,7 @@ if (cupomFreteGratis || taxa === 0) {
 // FUNÇÃO AUXILIAR: CENTRALIZA O CÁLCULO COMPLETO DO TOTAL
 // ==========================================
 function recalcularTotalGeralCompleto(subtotal, cardFee = 0) {
-  const taxa = typeof taxaEntregaAtual !== "undefined" ? taxaEntregaAtual : 0;
+  let taxa = typeof taxaEntregaAtual !== "undefined" ? taxaEntregaAtual : 0;
 
   // 🔒 TRAVA DE SEGURANÇA: Se o cupom for de frete grátis, força a variável global a ser 0
     // ============================================================
@@ -4655,7 +4655,7 @@ function atualizarTotaisComDesconto(discount = 0) {
 
   if (elementoTaxa) {
 
-    const taxa =
+    let taxa =
       typeof taxaEntregaAtual !== "undefined"
         ? Number(taxaEntregaAtual) || 0
         : 0;
