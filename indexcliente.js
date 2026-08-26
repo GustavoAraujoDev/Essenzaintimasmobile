@@ -3540,16 +3540,29 @@ function renderCart() {
   if (document.getElementById("cart-shipping")) {
     const taxa = typeof taxaEntregaAtual !== "undefined" ? taxaEntregaAtual : 0;
 
-    // 🔥 CORREÇÃO VISUAL: Se o cupom de frete grátis estiver aplicado, mostra "Grátis"
-    if (
-      appliedCouponCode === "FRETEGRATIS" ||
-      appliedCouponCode === "QUEROFRETE"
-    ) {
-      document.getElementById("cart-shipping").innerText = "Grátis";
-    } else {
-      document.getElementById("cart-shipping").innerText =
-        `R$ ${taxa.toFixed(2).replace(".", ",")}`;
-    }
+   // 🔥 CORREÇÃO VISUAL: Cupom de frete grátis
+const cupomAtual = String(
+  typeof appliedCouponCode !== "undefined"
+    ? appliedCouponCode
+    : ""
+)
+  .normalize("NFD")
+  .replace(/[\u0300-\u036f]/g, "")
+  .toUpperCase()
+  .replace(/\s+/g, "");
+
+// 🚚 Identifica automaticamente cupom relacionado a frete/entrega
+const cupomFreteGratis =
+  cupomAtual.includes("FRETE") ||
+  cupomAtual.includes("ENTREGA");
+
+// 🆓 Mostra "Grátis" quando o frete foi zerado
+if (cupomFreteGratis || taxa === 0) {
+  document.getElementById("cart-shipping").innerText = "Grátis";
+} else {
+  document.getElementById("cart-shipping").innerText =
+    `R$ ${Number(taxa).toFixed(2).replace(".", ",")}`;
+}
   }
 
   // 🔥 ADICIONE ESTA LINHA AQUI: Gatilho de segurança silencioso
@@ -3568,12 +3581,50 @@ function recalcularTotalGeralCompleto(subtotal, cardFee = 0) {
   const taxa = typeof taxaEntregaAtual !== "undefined" ? taxaEntregaAtual : 0;
 
   // 🔒 TRAVA DE SEGURANÇA: Se o cupom for de frete grátis, força a variável global a ser 0
-  if (
-    appliedCouponCode === "FRETEGRATIS" ||
-    appliedCouponCode === "QUEROFRETE"
-  ) {
+    // ============================================================
+
+  // 🎟️ IDENTIFICA CUPOM DE FRETE GRÁTIS AUTOMATICAMENTE
+
+  // ============================================================
+
+  const cupom = String(
+
+    typeof appliedCouponCode !== "undefined"
+
+      ? appliedCouponCode
+
+      : ""
+
+  )
+
+    .normalize("NFD")
+
+    .replace(/[\u0300-\u036f]/g, "")
+
+    .toUpperCase()
+
+    .replace(/\s+/g, "");
+
+  const cupomFreteGratis =
+
+    cupom.includes("FRETE") ||
+
+    cupom.includes("ENTREGA");
+
+  // ============================================================
+
+  // 🆓 FRETE GRÁTIS
+
+  // ============================================================
+
+  if (cupomFreteGratis) {
+
+    taxa = 0;
+
     taxaEntregaAtual = 0;
+
   }
+
 
   // Se não foi passado cardFee manualmente (ex: vindo da validação do cupom), calcula dinamicamente
   if (cardFee === 0) {
