@@ -88,6 +88,100 @@
   border-radius: 8px;
   transition: outline 0.3s ease;
 }
+
+    
+  /* ==========================================================
+     📱 MOBILE LANDSCAPE — HEADER COMPACTO
+     ========================================================== */
+
+  @media (max-height: 500px) and (orientation: landscape) {
+
+    /* Header */
+    header {
+      position: sticky;
+      top: 0;
+    }
+
+    /* Tarja superior */
+    header > div:first-child {
+      font-size: 8px !important;
+      padding-top: 4px !important;
+      padding-bottom: 4px !important;
+      line-height: 1.2;
+    }
+
+    /* Área principal do header */
+    header > div:last-child {
+      height: 58px !important;
+      padding-left: 12px !important;
+      padding-right: 12px !important;
+    }
+
+    /* Logo */
+    header .text-2xl,
+    header .sm\:text-3xl {
+      font-size: 1.15rem !important;
+      letter-spacing: 0.12em !important;
+      white-space: nowrap;
+    }
+
+    /* Espaçamento dos lados */
+    header .gap-4 {
+      gap: 8px !important;
+    }
+
+    header .sm\:gap-6 {
+      gap: 10px !important;
+    }
+
+    /* Ícones */
+    header svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    /* Botão/menu */
+    #menuToggle {
+      padding: 6px !important;
+    }
+
+    /* Busca */
+    #search-box {
+      top: 38px !important;
+      width: min(300px, 80vw) !important;
+    }
+
+    /* Evita elementos ultrapassarem a largura */
+    header > div:last-child {
+      min-width: 0;
+    }
+
+    header nav {
+      min-width: 0;
+    }
+  }
+
+
+  /* ==========================================================
+     📱 CELULAR PEQUENO EM LANDSCAPE
+     ========================================================== */
+
+  @media (max-height: 420px) and (orientation: landscape) {
+
+    header > div:first-child {
+      display: none;
+    }
+
+    header > div:last-child {
+      height: 54px !important;
+    }
+
+    header .text-2xl,
+    header .sm\:text-3xl {
+      font-size: 1rem !important;
+    }
+  }
+
   </style>
 </head>
 <body class="bg-[#FAF6F4] text-[#26211E] min-h-screen flex flex-col items-center selection:bg-[#E8D8CF] selection:text-[#26211E]">
