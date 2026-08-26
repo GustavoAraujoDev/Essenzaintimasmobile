@@ -4578,174 +4578,404 @@ let appliedCouponCode = null;
 let computedDiscount = 0;
 
 // ==========================================
-// 1. ATUALIZAR TOTAIS COM DESCONTO (VERSÃO CORRIGIDA E ÚNICA)
+// 1. ATUALIZAR TOTAIS COM DESCONTO
 // ==========================================
-// Substitua a antiga atualizarTotaisComDesconto por esta:
 function atualizarTotaisComDesconto(discount = 0) {
-  // Atualiza o estado global do desconto obtido
+
+  // ============================================================
+  // 💰 ATUALIZA O DESCONTO GLOBAL
+  // ============================================================
+
   computedDiscount = parseFloat(discount) || 0;
 
-  const textSubtotal = document.getElementById("cart-subtotal")
-    ? document.getElementById("cart-subtotal").innerText
-    : "R$ 0,00";
 
-  // Limpa string R$ para obter float puro
+  // ============================================================
+  // 🧮 RECUPERA O SUBTOTAL ATUAL
+  // ============================================================
+
+  const elementoSubtotal =
+    document.getElementById("cart-subtotal");
+
+  const textSubtotal =
+    elementoSubtotal
+      ? elementoSubtotal.innerText
+      : "R$ 0,00";
+
   const subtotal =
-    parseFloat(textSubtotal.replace(",", ".").replace(/[^\d.]/g, "")) || 0;
+    parseFloat(
+      textSubtotal
+        .replace(",", ".")
+        .replace(/[^\d.]/g, "")
+    ) || 0;
 
-  // Executa o cálculo completo injetando os valores na tela
+
+  // ============================================================
+  // 🎟️ IDENTIFICA CUPOM DE FRETE GRÁTIS
+  // ============================================================
+
+  const cupomAtual =
+    String(
+      typeof appliedCouponCode !== "undefined"
+        ? appliedCouponCode
+        : ""
+    )
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toUpperCase()
+      .replace(/\s+/g, "");
+
+
+  const cupomFreteGratis =
+    cupomAtual.includes("FRETE") ||
+    cupomAtual.includes("ENTREGA");
+
+
+  // ============================================================
+  // 🆓 GARANTE FRETE GRÁTIS
+  // ============================================================
+
+  if (cupomFreteGratis) {
+    taxaEntregaAtual = 0;
+  }
+
+
+  // ============================================================
+  // 🧮 RECALCULA O TOTAL
+  // ============================================================
+
   recalcularTotalGeralCompleto(subtotal);
 
-  // 🔥 SOLUÇÃO VISUAL: Força a linha da taxa de entrega a exibir "Grátis"
-  if (
-    appliedCouponCode === "FRETEGRATIS" ||
-    appliedCouponCode === "QUEROFRETE"
-  ) {
-    taxaEntregaAtual = 0; // Garante que a variável interna seja zerada
 
-    // Buscamos o elemento que exibe a taxa no resumo (o seu "cart-shipping")
-    const elementoTaxa = document.getElementById("cart-shipping");
-    if (elementoTaxa) {
+  // ============================================================
+  // 🚚 ATUALIZA VISUAL DO FRETE
+  // ============================================================
+
+  const elementoTaxa =
+    document.getElementById("cart-shipping");
+
+  if (elementoTaxa) {
+
+    const taxa =
+      typeof taxaEntregaAtual !== "undefined"
+        ? Number(taxaEntregaAtual) || 0
+        : 0;
+
+    if (cupomFreteGratis || taxa === 0) {
+
       elementoTaxa.innerText = "Grátis";
+
+    } else {
+
+      elementoTaxa.innerText =
+        `R$ ${taxa.toFixed(2).replace(".", ",")}`;
     }
   }
 }
+
+
 // ==========================================
 // 2. VALIDAÇÃO DO CUPOM
 // ==========================================
-// ==========================================
-// 2. VALIDAÇÃO DO CUPOM (VERSÃO COM UX MELHORADA)
-// ==========================================
 async function validateCoupon() {
-  const phoneInput = document.getElementById("client-phone").value.trim();
-  const couponInput = document.getElementById("coupon-code");
-  const codeInput = couponInput.value.toUpperCase().trim();
-  const textSubtotal = document.getElementById("cart-subtotal")
-    ? document.getElementById("cart-subtotal").innerText
-    : "R$ 0.00";
 
-  // Extrai o valor do subtotal mantendo o ponto original do JS
+  // ============================================================
+  // 📱 TELEFONE
+  // ============================================================
+
+  const phoneElement =
+    document.getElementById("client-phone");
+
+  const phoneInput =
+    phoneElement
+      ? phoneElement.value.trim()
+      : "";
+
+
+  // ============================================================
+  // 🎟️ CUPOM
+  // ============================================================
+
+  const couponInput =
+    document.getElementById("coupon-code");
+
+  const codeInput =
+    couponInput
+      ? couponInput.value.toUpperCase().trim()
+      : "";
+
+
+  // ============================================================
+  // 💰 SUBTOTAL
+  // ============================================================
+
+  const elementoSubtotal =
+    document.getElementById("cart-subtotal");
+
+  const textSubtotal =
+    elementoSubtotal
+      ? elementoSubtotal.innerText
+      : "R$ 0,00";
+
   const currentSubtotal =
-    parseFloat(textSubtotal.replace(",", ".").replace(/[^\d.]/g, "")) || 0;
+    parseFloat(
+      textSubtotal
+        .replace(",", ".")
+        .replace(/[^\d.]/g, "")
+    ) || 0;
+
+
+  // ============================================================
+  // 🔐 VALIDAÇÕES BÁSICAS
+  // ============================================================
 
   if (!phoneInput) {
+
     showCouponMessage(
       "Digite seu WhatsApp primeiro na seção 'Seus Dados'.",
-      "error",
+      "error"
     );
-    document.getElementById("client-phone").focus();
+
+    if (phoneElement) {
+      phoneElement.focus();
+    }
+
     return;
   }
+
 
   if (!codeInput) {
-    showCouponMessage("Por favor, insira o código do cupom.", "error");
+
+    showCouponMessage(
+      "Por favor, insira o código do cupom.",
+      "error"
+    );
+
     return;
   }
 
+
+  // ============================================================
+  // 🌐 REQUISIÇÃO PARA API
+  // ============================================================
+
   try {
-    const response = await fetch(`${API_BASE_COUPONS}/coupons/validate`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        code: codeInput,
-        purchaseValue: currentSubtotal,
-        customerPhone: phoneInput,
-      }),
-    });
 
-    const result = await response.json();
+    const response =
+      await fetch(
+        `${API_BASE_COUPONS}/coupons/validate`,
+        {
+          method: "POST",
 
-    if (response.ok && result.valid) {
-      appliedCouponCode = result.code;
-      computedDiscount = parseFloat(result.discountValue) || 0;
+          headers: {
+            "Content-Type": "application/json"
+          },
 
-     // ============================================================
-// 🎟️ IDENTIFICAÇÃO AUTOMÁTICA DE CUPOM DE FRETE
-// ============================================================
-
-const cupomValidado = String(appliedCouponCode || "")
-  .normalize("NFD")
-  .replace(/[\u0300-\u036f]/g, "")
-  .toUpperCase()
-  .replace(/\s+/g, "");
-
-const cupomFreteGratis =
-  cupomValidado.includes("FRETE") ||
-  cupomValidado.includes("ENTREGA");
-
-
-// ============================================================
-// 🆓 FRETE GRÁTIS
-// ============================================================
-
-if (cupomFreteGratis) {
-
-  taxaEntregaAtual = 0;
-
-  // Não acumula desconto monetário + frete grátis
-  computedDiscount = 0;
-
-  const infoText =
-    document.getElementById("delivery-info");
-
-  if (infoText) {
-    infoText.innerHTML =
-      `🛵 Cupom Aplicado: <b class="text-emerald-600">
-        FRETE GRÁTIS ATIVADO!
-      </b>`;
-  }
-
-  showCouponMessage(
-    "Cupom de Frete Grátis aplicado com sucesso!",
-    "success"
-  );
-
-} else {
-
-  showCouponMessage(
-    `Cupom ${result.code} aplicado!`,
-    "success"
-  );
-}
-
-        // Atualiza visualmente o texto informativo do bairro (se houver)
-        const infoText = document.getElementById("delivery-info");
-        if (infoText) {
-          infoText.innerHTML = `🛵 Cupom Aplicado: <b class="text-emerald-600">FRETE GRÁTIS ATIVADO!</b>`;
+          body: JSON.stringify({
+            code: codeInput,
+            purchaseValue: currentSubtotal,
+            customerPhone: phoneInput
+          })
         }
-
-        showCouponMessage(
-          `Cupom de Frete Grátis aplicado com sucesso!`,
-          "success",
-        );
-      } else {
-        showCouponMessage(`Cupom ${result.code} aplicado!`, "success");
-      }
-
-      updateCouponUI(true, computedDiscount);
-      atualizarTotaisComDesconto(computedDiscount);
-    } else {
-      // 💡 Se o backend recusar (ex: subtotal menor que o mínimo),
-      // mostra o erro amigável retornado da API e preserva o texto no input
-      showCouponMessage(
-        result.error || "Cupom inválido para esta compra.",
-        "error",
       );
 
-      // Reseta os estados globais de desconto sem limpar o campo de texto
+
+    // ============================================================
+    // 📦 TENTA LER RESPOSTA DA API
+    // ============================================================
+
+    let result = {};
+
+    try {
+      result = await response.json();
+    } catch (jsonError) {
+
+      console.error(
+        "Resposta da API não é JSON:",
+        jsonError
+      );
+
+      throw new Error(
+        `Resposta inválida da API (${response.status})`
+      );
+    }
+
+
+    console.log(
+      "🎟️ Resposta da validação do cupom:",
+      result
+    );
+
+
+    // ============================================================
+    // ❌ CUPOM INVÁLIDO
+    // ============================================================
+
+    if (!response.ok || !result.valid) {
+
+      showCouponMessage(
+        result.error ||
+          "Cupom inválido para esta compra.",
+        "error"
+      );
+
+
+      // Reset dos estados
+
       appliedCouponCode = null;
+
       computedDiscount = 0;
 
-      // Mantém a UI em modo "erro" (não bloqueia o input e não esconde o botão aplicar)
-      updateCouponUI(false, 0);
+
+      updateCouponUI(
+        false,
+        0
+      );
+
+
       atualizarTotaisComDesconto(0);
+
+      return;
     }
+
+
+    // ============================================================
+    // ✅ CUPOM VÁLIDO
+    // ============================================================
+
+    appliedCouponCode =
+      String(
+        result.code || codeInput
+      )
+        .toUpperCase()
+        .trim();
+
+
+    computedDiscount =
+      parseFloat(
+        result.discountValue
+      ) || 0;
+
+
+    // ============================================================
+    // 🎟️ IDENTIFICA CUPOM DE FRETE
+    // ============================================================
+
+    const cupomValidado =
+      appliedCouponCode
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toUpperCase()
+        .replace(/\s+/g, "");
+
+
+    const cupomFreteGratis =
+      cupomValidado.includes("FRETE") ||
+      cupomValidado.includes("ENTREGA");
+
+
+    // ============================================================
+    // 🆓 CUPOM DE FRETE GRÁTIS
+    // ============================================================
+
+    if (cupomFreteGratis) {
+
+      // Zera o frete
+      taxaEntregaAtual = 0;
+
+      // Evita acumular desconto monetário
+      // com frete grátis
+      computedDiscount = 0;
+
+
+      // ----------------------------------------------------------
+      // 📍 ATUALIZA INFORMAÇÃO DE ENTREGA
+      // ----------------------------------------------------------
+
+      const infoText =
+        document.getElementById("delivery-info");
+
+      if (infoText) {
+
+        infoText.innerHTML =
+          `🛵 Cupom Aplicado:
+           <b class="text-emerald-600">
+             FRETE GRÁTIS ATIVADO!
+           </b>`;
+      }
+
+
+      // ----------------------------------------------------------
+      // 🎉 MENSAGEM
+      // ----------------------------------------------------------
+
+      showCouponMessage(
+        "Cupom de Frete Grátis aplicado com sucesso!",
+        "success"
+      );
+
+    } else {
+
+      // ==========================================================
+      // 💰 CUPOM DE DESCONTO NORMAL
+      // ==========================================================
+
+      showCouponMessage(
+        `Cupom ${appliedCouponCode} aplicado!`,
+        "success"
+      );
+    }
+
+
+    // ============================================================
+    // 🖥️ ATUALIZA INTERFACE DO CUPOM
+    // ============================================================
+
+    updateCouponUI(
+      true,
+      computedDiscount
+    );
+
+
+    // ============================================================
+    // 🧮 RECALCULA VALORES
+    // ============================================================
+
+    atualizarTotaisComDesconto(
+      computedDiscount
+    );
+
+
   } catch (error) {
-    console.error("Erro na requisição do cupom:", error);
-    showCouponMessage("Erro de conexão ao validar o cupom.", "error");
+
+    console.error(
+      "❌ Erro completo na validação do cupom:",
+      error
+    );
+
+
+    // ============================================================
+    // 🔎 MENSAGEM MAIS PRECISA
+    // ============================================================
+
+    if (
+      error instanceof TypeError &&
+      error.message.includes("fetch")
+    ) {
+
+      showCouponMessage(
+        "Não foi possível conectar ao servidor de cupons.",
+        "error"
+      );
+
+    } else {
+
+      showCouponMessage(
+        "Erro ao validar o cupom. Tente novamente.",
+        "error"
+      );
+    }
   }
 }
-
 // ==========================================
 // 3. REMOÇÃO DO CUPOM
 // ==========================================
