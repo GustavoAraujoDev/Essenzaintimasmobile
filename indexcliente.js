@@ -3863,7 +3863,7 @@ async function checkout() {
     "O servidor não retornou o identificador do pedido."
   );
 }
-
+    Swal.close();
     enviarParaWhatsApp(pedidoSalvo, cart);
     limparCarrinhoNoSucesso();
   } catch (err) {
