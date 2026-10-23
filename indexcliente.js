@@ -3852,18 +3852,29 @@ async function checkout() {
 
   try {
     const pedidoSalvo = await criarPedidoNoSistema(pedidoFinal);
+    // Verifica se o servidor confirmou o salvamento
+
+    if (
+      !pedidoSalvo ||
+      typeof pedidoSalvo !== "object" ||
+      !pedidoSalvo.entityId
+    ) {
+      throw new Error(
+        "O servidor não confirmou o salvamento do pedido."
+      );
+    }
+
     enviarParaWhatsApp(pedidoSalvo, cart);
     limparCarrinhoNoSucesso();
   } catch (err) {
     console.error("Erro no checkout:", err);
-    Swal.fire({
-      icon: "warning",
-      title: "Pedido enviado via WhatsApp",
-      text: "Houve um erro ao registrar no banco, mas você pode seguir pelo WhatsApp.",
-      confirmButtonText: "Abrir WhatsApp",
-    }).then(() => {
-      enviarParaWhatsApp(pedidoFinal, cart);
-      limparCarrinhoNoSucesso(); // Limpa o carrinho mesmo indo pelo fluxo alternativo (WhatsApp)
+    await Swal.fire({
+      icon: "error",
+      title: "Não foi possível finalizar o pedido",
+      text:
+        "Não foi possível confirmar o salvamento do pedido no servidor. " +
+        "Seu carrinho foi preservado. Verifique sua conexão e tente novamente.",
+      confirmButtonText: "Entendi",
     });
   }
 }
@@ -3975,26 +3986,53 @@ ${itensTexto}
 
 async function criarPedidoNoSistema(pedidoFinal) {
   Swal.fire({
-    title: "Processando pedido...",
+    title: "Salvando pedido...",
+    text: "Aguarde a confirmação do servidor.",
     didOpen: () => Swal.showLoading(),
     allowOutsideClick: false,
+    allowEscapeKey: false,
+    showConfirmButton: false,
   });
 
-  const res = await fetch(`https://essenzaintimasapi.onrender.com/pedidos`, {
-    // Usando a constante de ambiente que definimos antes
-    method: "POST",
-    credentials: "include",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(pedidoFinal),
-  });
+  try {
+    const res = await fetch(
+      "https://essenzaintimasapi.onrender.com/pedidos",
+      {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(pedidoFinal),
+      }
+    );
 
-  const result = await res.json();
+    // Tenta ler a resposta do servidor
+    const result = await res.json();
 
-  if (!res.ok) {
-    throw new Error(result.error || result.message || "Erro ao salvar pedido.");
+    // Qualquer resposta HTTP de erro interrompe o checkout
+    if (!res.ok) {
+      throw new Error(
+        result.error ||
+        result.message ||
+        "O servidor não conseguiu salvar o pedido."
+      );
+    }
+
+    // Confirma que a API retornou os dados do pedido
+    if (!result || !result.data || typeof result.data !== "object") {
+      throw new Error(
+        "O servidor não retornou a confirmação do pedido."
+      );
+    }
+
+    // Retorna o pedido criado pela API
+    return result.data;
+
+  } catch (error) {
+    console.error("Falha ao salvar pedido:", error);
+    throw error;
   }
-
-  return result.data; // Retorna o pedido criado (contendo o ID gerado pelo banco)
 }
 
 window.onload = async () => {
