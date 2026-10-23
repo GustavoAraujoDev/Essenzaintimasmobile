@@ -3753,6 +3753,11 @@ async function checkout() {
 
   // 🔥 CAPTURA DO MÉTODO DE PAGAMENTO
   const metodoPagamento = document.getElementById("payment-method").value;
+  
+  alert(
+  "MÉTODO SELECIONADO NO CHECKOUT:\n\n" +
+  metodoPagamento
+);
 
   // 💳 Lógica da taxa do cartão (R$ 1,00) se for Crédito ou Débito
   let taxaCartao = 0;
@@ -3852,6 +3857,13 @@ async function checkout() {
 
   try {
     const pedidoSalvo = await criarPedidoNoSistema(pedidoFinal);
+    
+    alert(
+  "MÉTODO RETORNADO PELO SERVIDOR:\n\n" +
+  "Selecionado: " + pedidoFinal.pagamento.metodo + "\n" +
+  "Salvo/retornado: " +
+  (pedidoSalvo.pagamento?.metodo || "NÃO INFORMADO")
+);
     // Verifica se o servidor confirmou o salvamento
 
     if (
@@ -3993,6 +4005,11 @@ async function criarPedidoNoSistema(pedidoFinal) {
     allowEscapeKey: false,
     showConfirmButton: false,
   });
+  
+  alert(
+  "MÉTODO ENVIADO PARA A API:\n\n" +
+  pedidoFinal.pagamento.metodo
+);
 
   try {
     const res = await fetch(
