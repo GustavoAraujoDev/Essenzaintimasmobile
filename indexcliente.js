@@ -3752,12 +3752,17 @@ async function checkout() {
       : 0;
 
   // 🔥 CAPTURA DO MÉTODO DE PAGAMENTO
-  const metodoPagamento = document.getElementById("payment-method").value;
   
+  // 🔥 CAPTURA DO MÉTODO DE PAGAMENTO
+  const campoPagamento = document.getElementById("payment-method");
+  const metodoPagamento = campoPagamento.value;
+
   alert(
-  "MÉTODO SELECIONADO NO CHECKOUT:\n\n" +
-  metodoPagamento
-);
+    "MÉTODO NO CHECKOUT\n\n" +
+    "Método selecionado agora: " + metodoPagamento + "\n" +
+    "Valor do campo: " + campoPagamento.value
+  );
+
 
   // 💳 Lógica da taxa do cartão (R$ 1,00) se for Crédito ou Débito
   let taxaCartao = 0;
@@ -3885,6 +3890,24 @@ async function checkout() {
     });
   }
 }
+
+
+document.addEventListener("DOMContentLoaded", () => {
+  const campoPagamento = document.getElementById("payment-method");
+
+  if (!campoPagamento) {
+    alert("ERRO: campo payment-method não encontrado!");
+    return;
+  }
+
+  campoPagamento.addEventListener("change", () => {
+    alert(
+      "PAGAMENTO ALTERADO\n\n" +
+      "Novo valor selecionado: " + campoPagamento.value
+    );
+  });
+});
+
 
 function enviarParaWhatsApp(pedido, itensDoCarrinho) {
   const agora = new Date();
