@@ -3858,12 +3858,7 @@ async function checkout() {
   try {
     const pedidoSalvo = await criarPedidoNoSistema(pedidoFinal);
     
-    alert(
-  "MÉTODO RETORNADO PELO SERVIDOR:\n\n" +
-  "Selecionado: " + pedidoFinal.pagamento.metodo + "\n" +
-  "Salvo/retornado: " +
-  (pedidoSalvo.pagamento?.metodo || "NÃO INFORMADO")
-);
+    
     // Verifica se o servidor confirmou o salvamento
 
     if (
@@ -4005,11 +4000,6 @@ async function criarPedidoNoSistema(pedidoFinal) {
     allowEscapeKey: false,
     showConfirmButton: false,
   });
-  
-  alert(
-  "MÉTODO ENVIADO PARA A API:\n\n" +
-  pedidoFinal.pagamento.metodo
-);
 
   try {
     const res = await fetch(
