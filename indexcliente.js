@@ -3854,6 +3854,18 @@ async function checkout() {
     const pedidoSalvo = await criarPedidoNoSistema(pedidoFinal);
     // Verifica se o servidor confirmou o salvamento
 
+    alert(
+  "[DEBUG] Pedido retornado pelo servidor:\n\n" +
+  JSON.stringify(pedidoSalvo, null, 2)
+);
+
+alert(
+  "[DEBUG] Identificadores do pedido:\n\n" +
+  "entityId: " + (pedidoSalvo?.entityId ?? "NÃO EXISTE") + "\n" +
+  "id: " + (pedidoSalvo?.id ?? "NÃO EXISTE") + "\n" +
+  "_id: " + (pedidoSalvo?._id ?? "NÃO EXISTE")
+);
+
     if (
       !pedidoSalvo ||
       typeof pedidoSalvo !== "object" ||
