@@ -181,6 +181,44 @@
       font-size: 1rem !important;
     }
   }
+  
+  
+/* Modo escuro automático conforme o celular */
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #171311 !important;
+    color: #F8F5F2;
+  }
+
+  header,
+  main,
+  footer,
+  section {
+    color: #F8F5F2;
+  }
+
+  .bg-white,
+  .bg-gray-50,
+  .bg-gray-100 {
+    background-color: #26211E !important;
+    color: #F8F5F2 !important;
+  }
+
+  .text-gray-900,
+  .text-gray-800,
+  .text-gray-700 {
+    color: #F8F5F2 !important;
+  }
+
+  input,
+  textarea,
+  select {
+    background-color: #26211E;
+    color: #F8F5F2;
+    border-color: #493D36;
+  }
+}
+
 
   </style>
 </head>
