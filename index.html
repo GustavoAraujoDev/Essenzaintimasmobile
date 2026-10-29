@@ -184,38 +184,100 @@
   
   
 /* Modo escuro automático conforme o celular */
+
+/* =====================================
+   ESSENZA ÍNTIMAS — DARK MODE PREMIUM
+   ===================================== */
+
 @media (prefers-color-scheme: dark) {
+
   body {
     background-color: #171311 !important;
     color: #F8F5F2;
   }
 
+  /* Superfícies principais */
   header,
-  main,
-  footer,
-  section {
+  footer {
+    background-color: #1D1917;
     color: #F8F5F2;
   }
 
+  /* Cards e áreas claras */
   .bg-white,
   .bg-gray-50,
-  .bg-gray-100 {
+  .bg-gray-100,
+  .bg-stone-50,
+  .bg-stone-100 {
     background-color: #26211E !important;
     color: #F8F5F2 !important;
   }
 
+  /* Textos */
   .text-gray-900,
   .text-gray-800,
-  .text-gray-700 {
-    color: #F8F5F2 !important;
+  .text-gray-700,
+  .text-gray-600,
+  .text-stone-900,
+  .text-stone-800,
+  .text-stone-700,
+  .text-black {
+    color: #F0E6DF !important;
   }
 
+  .text-gray-500,
+  .text-gray-400,
+  .text-stone-500,
+  .text-stone-400 {
+    color: #B9A69A !important;
+  }
+
+  /* Identidade nude e rose gold */
+  .ifood-red {
+    color: #C8A99A !important;
+  }
+
+  .bg-ifood-red {
+    background-color: #9E7960 !important;
+    color: #FFFFFF !important;
+  }
+
+  .bg-ifood-red:hover {
+    background-color: #B18D75 !important;
+  }
+
+  /* Campos */
   input,
   textarea,
   select {
+    background-color: #211C19 !important;
+    color: #F8F5F2 !important;
+    border-color: #514139 !important;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: #A9978B !important;
+  }
+
+  /* Bordas */
+  .border-gray-100,
+  .border-gray-200,
+  .border-stone-200,
+  .border {
+    border-color: #40352F;
+  }
+
+  /* Evita o alerta piscando com cores claras */
+  .piscar-alerta-direto {
+    animation: none;
     background-color: #26211E;
-    color: #F8F5F2;
-    border-color: #493D36;
+    border-color: #514139;
+  }
+
+  /* Destaque de pesquisa */
+  .resultado-busca {
+    outline-color: #C8A99A !important;
   }
 }
 
